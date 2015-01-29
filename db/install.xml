@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="auth/antihammer/db" VERSION="20110720" COMMENT="XMLDB file for Moodle auth/antihammer"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="auth_antihammer" COMMENT="antihammer_ssolog table retrofitted from MySQL" NEXT="auth_antihammer_log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="ip"/>
+        <FIELD NAME="ip" TYPE="char" LENGTH="100" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="count"/>
+        <FIELD NAME="count" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="ip" NEXT="firstattempt"/>
+        <FIELD NAME="firstattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="count" NEXT="blocked"/>
+        <FIELD NAME="blocked" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="firstattempt" NEXT="blocktime"/>
+        <FIELD NAME="blocktime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="blocked"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="auth_antihammer_log" COMMENT="antihammer_ssolog table retrofitted from MySQL" PREVIOUS="auth_antihammer" NEXT="auth_antihammer_status">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="module"/>
+        <FIELD NAME="module" TYPE="char" LENGTH="32" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="userid" NEXT="type"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="32" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="module" NEXT="msg"/>
+        <FIELD NAME="msg" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="type" NEXT="code"/>
+        <FIELD NAME="code" TYPE="char" LENGTH="32" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="msg" NEXT="action"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="100" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="code" NEXT="data"/>
+        <FIELD NAME="data" TYPE="text" LENGTH="medium" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="action" NEXT="datecreated"/>
+        <FIELD NAME="datecreated" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="data"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="auth_antihammer_status" COMMENT="antihammer_ssolog table retrofitted from MySQL" PREVIOUS="auth_antihammer_status">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="id" NEXT="username"/>
+        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="userid" NEXT="ip"/>
+        <FIELD NAME="ip" TYPE="char" LENGTH="100" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="username" NEXT="count"/>
+        <FIELD NAME="count" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="ip" NEXT="firstattempt"/>
+        <FIELD NAME="firstattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="count" NEXT="blocked"/>
+        <FIELD NAME="blocked" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="firstattempt" NEXT="blocktime"/>
+        <FIELD NAME="blocktime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="blocked"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
