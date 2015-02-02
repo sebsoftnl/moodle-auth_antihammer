@@ -164,8 +164,11 @@ class auth_plugin_antihammer extends auth_plugin_base {
     public function process_config($config) {
         self::config_load_default($config);
         // Save settings.
+        set_config('enabled', $config->enabled, 'auth/antihammer');
         set_config('attempts', $config->attempts, 'auth/antihammer');
         set_config('attemptcounter', $config->attemptcounter, 'auth/antihammer');
+        set_config('ip_attempts', $config->ip_attempts, 'auth/antihammer');
+        set_config('ip_attemptcounter', $config->ip_attemptcounter, 'auth/antihammer');
         set_config('autoclear_blocked', $config->autoclear_blocked, 'auth/antihammer');
         set_config('autoclear_after', $config->autoclear_after, 'auth/antihammer');
         set_config('blockusername', $config->blockusername, 'auth/antihammer');
@@ -188,6 +191,11 @@ class auth_plugin_antihammer extends auth_plugin_base {
         global $frm, $user;
         global $CFG;
         global $SESSION, $OUTPUT, $PAGE, $DB;
+
+        // Don't do anything if we're disabled.
+        if (!(bool)$this->config->enabled) {
+            return;
+        }
 
         // First, cleanup old crap.
         $this->clean_hammering();
@@ -280,6 +288,18 @@ class auth_plugin_antihammer extends auth_plugin_base {
      */
     static final public function config_load_default(&$config) {
         // Set to defaults if undefined.
+        if (!isset($config->enabled)) {
+            $config->enabled = 1;
+        }
+        if (!isset($config->blockip)) {
+            $config->blockip = 1;
+        }
+        if (!isset($config->ip_attempts)) {
+            $config->ip_attempts = 10;
+        }
+        if (!isset($config->ip_attemptcounter)) {
+            $config->ip_attemptcounter = 300;
+        }
         if (!isset($config->attempts)) {
             $config->attempts = 5;
         }
@@ -294,9 +314,6 @@ class auth_plugin_antihammer extends auth_plugin_base {
         }
         if (!isset($config->blockusername)) {
             $config->blockusername = 1;
-        }
-        if (!isset($config->blockip)) {
-            $config->blockip = 1;
         }
         if (!isset($config->blockpage)) {
             $config->blockpage = '';
@@ -331,8 +348,8 @@ class auth_plugin_antihammer extends auth_plugin_base {
         $DB->delete_records_select('auth_antihammer', 'blocktime < ? AND blocked = 1', $params);
 
         // Also clean if attempts are below count taking the time into account.
-        $cleantime = time() - $this->config->attemptcounter;
-        $params = array($this->config->attempts, $cleantime);
+        $cleantime = time() - $this->config->ip_attemptcounter;
+        $params = array($this->config->ip_attempts, $cleantime);
         $DB->delete_records_select('auth_antihammer', 'count < ? AND firstattempt < ?', $params);
     }
 
@@ -354,7 +371,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
         // Check if already blocked.
         if ($this->currenthammer->blocked) {
             throw new \auth_antihammer\exception('Hammering detected: IP address = ' .
-                    $this->currenthammer->ip . '(IP is blocked)');
+                    $this->currenthammer->ip . ' (IP is blocked)');
         }
 
         if ($this->currenthammer->id == 0) {
@@ -363,17 +380,19 @@ class auth_plugin_antihammer extends auth_plugin_base {
         $this->currenthammer->count++;
 
         // Now check if to be blocked.
-        $timecheck = $this->currenthammer->firstattempt + $this->config->attemptcounter;
-        if ((time() <= $timecheck) && ($this->currenthammer->count >= $this->config->attempts)) {
+        $timecheck = $this->currenthammer->firstattempt + $this->config->ip_attemptcounter;
+        if ((time() <= $timecheck) && ($this->currenthammer->count >= $this->config->ip_attempts)) {
             // Set blocked.
             $this->currenthammer->blocked = 1;
             $this->currenthammer->blocktime = time();
+        } else if ((time() > $timecheck)) {
+            // Reset firstattempt (to prevent messing up in case cleanup is disabled).
+            $this->currenthammer->firstattempt = time();
         }
         $this->currenthammer->save();
-
         if ($this->currenthammer->blocked) {
             throw new \auth_antihammer\exception('Hammering detected: IP address = ' .
-                    $this->currenthammer->ip . '(IP is blocked)');
+                    $this->currenthammer->ip . ' (IP is blocked)');
         }
     }
 
@@ -417,7 +436,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
         // Check if already blocked.
         if ($this->currentstatus->blocked) {
             throw new \auth_antihammer\exception('Hammering detected: Username=' . $username .
-                    '; IP address = ' . $this->currentstatus->ip . '(IP and/or username is blocked)');
+                    '; IP address = ' . $this->currentstatus->ip . ' (IP and/or username is blocked)');
         }
 
         if ($this->currentstatus->id == 0) {
@@ -432,12 +451,15 @@ class auth_plugin_antihammer extends auth_plugin_base {
             // Set blocked.
             $this->currentstatus->blocked = 1;
             $this->currentstatus->blocktime = time();
+        } else if ((time() > $timecheck)) {
+            // Reset firstattempt (to prevent messing up in case cleanup is disabled).
+            $this->currentstatus->firstattempt = time();
         }
         $this->currentstatus->save();
 
         if ($this->currentstatus->blocked) {
             throw new \auth_antihammer\exception('Hammering detected: Username=' . $username .
-                    '; IP address = ' . $this->currentstatus->ip . '(IP and/or username is blocked)');
+                    '; IP address = ' . $this->currentstatus->ip . ' (IP and/or username is blocked)');
         }
     }
 

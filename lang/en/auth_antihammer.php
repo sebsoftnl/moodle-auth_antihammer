@@ -35,6 +35,8 @@ $string['promodesc'] = 'This plugin is written by Sebsoft Managed Hosting & Soft
 $string['auth_antihammer'] = 'antihammer Anti-hammering / Login blocker';
 $string['attemptcounter'] = 'Attempts timespan';
 $string['attempts'] = 'Maximum number of attempts';
+$string['ip_attemptcounter'] = 'IP attempts timespan';
+$string['ip_attempts'] = 'Maximum number of attempts';
 $string['autoclear_after'] = 'Autoclear block after (seconds)';
 $string['autoclear_blocked'] = 'Autoclear blocked IPs/users?';
 $string['blockip'] = 'Block by IP addresses?';
@@ -51,3 +53,4 @@ $string['mail:blocking:message'] = '<p>Dear {$a->firstname} {$a->lastname}</p>
 <p>A block has been set as a result of too many login attempts</p>
 <p>The block is made active for IP address {$a->ip}, username {$a->username}</p>
 <p>Kind regards,<br/>Support system</p>';
+$string['enabled'] = 'Antihammering plugin enabled?';

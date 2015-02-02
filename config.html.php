@@ -39,7 +39,91 @@ $header = '<div class="block-userrestore-logopromo">' . $image . $donate . '</di
 <?php echo get_string('promodesc', 'auth_antihammer', $header); ?>
 <table cellspacing="0" cellpadding="5" border="0">
     <tr valign="top">
-        <td align="right"><?php print_string('auth_antihammer', 'auth_antihammer') ?>: </td>
+        <td align="right"><?php print_string('enabled', 'auth_antihammer') ?>: </td>
+    </tr><tr valign="top">
+        <td>
+            <table><tr><td style="width:200px">
+                        <label for="enabled" class="antihammer">enabled</label>
+                    </td><td>
+                        <input type="hidden" name="enabled" value="0"/>
+                        <input name="enabled" id="enabled" type="checkbox" value="1" <?php
+echo ($config->enabled ? 'checked="checked"' : ''); ?>/>
+                    </td></tr></table>
+        </td>
+    </tr>
+    <tr valign="top"><td><hr/></td></tr>
+
+    <tr valign="top">
+        <td align="right"><?php print_string('blockip', 'auth_antihammer') ?>: </td>
+    </tr><tr valign="top">
+        <td>
+            <table><tr><td style="width:200px">
+                        <label for="blockip" class="antihammer">blockip</label>
+                    </td><td>
+                        <input type="hidden" name="blockip" value="0"/>
+                        <input name="blockip" id="blockip" type="checkbox" value="1" <?php
+echo ($config->blockip ? 'checked="checked"' : ''); ?>/>
+                    </td></tr></table>
+        </td>
+    </tr>
+    <tr valign="top"><td>&nbsp;</td></tr>
+
+    <tr valign="top">
+        <td align="right"><?php print_string('ip_attempts', 'auth_antihammer') ?>: </td>
+    </tr><tr valign="top">
+        <td>
+            <table><tr><td style="width:200px">
+                        <label for="ip_attempts" class="antihammer">ip_attempts</label>
+                    </td><td>
+                        <select name="ip_attempts" id="ip_attempts">
+<?php
+for ($i = 0; $i <= 50; $i++) {
+    $selected = (($config->ip_attempts == $i) ? ' selected="selected"' : '');
+    echo '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+}
+?>
+                        </select>
+                    </td></tr></table>
+        </td>
+    </tr>
+    <tr valign="top"><td>&nbsp;</td></tr>
+
+    <tr valign="top">
+        <td align="right"><?php print_string('ip_attemptcounter', 'auth_antihammer') ?>: </td>
+    </tr><tr valign="top">
+        <td>
+            <table><tr><td style="width:200px">
+                        <label for="ip_attemptcounter" class="antihammer">ip_attemptcounter</label>
+                    </td><td>
+                        <input name="ip_attemptcounter" id="ip_attemptcounter" type="text" size="40" value="<?php
+echo $config->ip_attemptcounter ?>" />
+<?php
+if (isset($err['ip_attemptcounter'])) {
+    echo $OUTPUT->error_text($err['ip_attemptcounter']);
+}
+?>
+                    </td></tr></table>
+        </td>
+    </tr>
+    <tr valign="top"><td><hr/></td></tr>
+
+    <tr valign="top">
+        <td align="right"><?php print_string('blockusername', 'auth_antihammer') ?>: </td>
+    </tr><tr valign="top">
+        <td>
+            <table><tr><td style="width:200px">
+                        <label for="blockusername" class="antihammer">blockusername</label>
+                    </td><td>
+                        <input type="hidden" name="blockusername" value="0"/>
+                        <input name="blockusername" id="blockusername" type="checkbox" value="1" <?php
+echo ($config->blockusername ? 'checked="checked"' : ''); ?>/>
+                    </td></tr></table>
+        </td>
+    </tr>
+    <tr valign="top"><td>&nbsp;</td></tr>
+
+    <tr valign="top">
+        <td align="right"><?php print_string('attempts', 'auth_antihammer') ?>: </td>
     </tr><tr valign="top">
         <td>
             <table><tr><td style="width:200px">
@@ -75,7 +159,7 @@ if (isset($err['attemptcounter'])) {
                     </td></tr></table>
         </td>
     </tr>
-    <tr valign="top"><td>&nbsp;</td></tr>
+    <tr valign="top"><td><hr/></td></tr>
 
     <tr valign="top">
         <td align="right"><?php print_string('autoclear_blocked', 'auth_antihammer') ?>: </td>
@@ -109,37 +193,7 @@ if (isset($err['autoclear_after'])) {
                     </td></tr></table>
         </td>
     </tr>
-    <tr valign="top"><td>&nbsp;</td></tr>
-
-    <tr valign="top">
-        <td align="right"><?php print_string('blockusername', 'auth_antihammer') ?>: </td>
-    </tr><tr valign="top">
-        <td>
-            <table><tr><td style="width:200px">
-                        <label for="blockusername" class="antihammer">blockusername</label>
-                    </td><td>
-                        <input type="hidden" name="blockusername" value="0"/>
-                        <input name="blockusername" id="blockusername" type="checkbox" value="1" <?php
-echo ($config->blockusername ? 'checked="checked"' : ''); ?>/>
-                    </td></tr></table>
-        </td>
-    </tr>
-    <tr valign="top"><td>&nbsp;</td></tr>
-
-    <tr valign="top">
-        <td align="right"><?php print_string('blockip', 'auth_antihammer') ?>: </td>
-    </tr><tr valign="top">
-        <td>
-            <table><tr><td style="width:200px">
-                        <label for="blockip" class="antihammer">blockip</label>
-                    </td><td>
-                        <input type="hidden" name="blockip" value="0"/>
-                        <input name="blockip" id="blockip" type="checkbox" value="1" <?php
-echo ($config->blockip ? 'checked="checked"' : ''); ?>/>
-                    </td></tr></table>
-        </td>
-    </tr>
-    <tr valign="top"><td>&nbsp;</td></tr>
+    <tr valign="top"><td><hr/></td></tr>
 
     <tr valign="top">
         <td align="right"><?php print_string('blockpage', 'auth_antihammer') ?>: </td>

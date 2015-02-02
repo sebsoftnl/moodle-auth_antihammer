@@ -35,6 +35,8 @@ $string['promodesc'] = 'Deze plugin is ontwikkeld door Sebsoft Managed Hosting &
 $string['auth_antihammer'] = 'antihammer Anti-hammering / Login blocker';
 $string['attemptcounter'] = 'Tijdspanne login pogingen';
 $string['attempts'] = 'Maximum aantal login pogingen';
+$string['ip_attemptcounter'] = 'Tijdspanne login pogingen voor IP blokkade';
+$string['ip_attempts'] = 'Maximum aantal login pogingen voor IP blokkade';
 $string['autoclear_after'] = 'Tijdspanne voor automatisch opheffen (seconden)';
 $string['autoclear_blocked'] = 'Automatisch opheffen blokkade?';
 $string['blockip'] = 'Blokkeren op basis van IP adres';
@@ -51,3 +53,4 @@ $string['mail:blocking:message'] = '<p>Beste {$a->firstname} {$a->lastname}</p>
 <p>Er is een blokkade in werking gesteld ten gevolge van teveel login pogingen</p>
 <p>Het gaat om IP adres {$a->ip}, gebruikersnaam {$a->username}</p>
 <p>Met vriendelijke groet,<br/>Support systeem</p>';
+$string['enabled'] = 'Antihammering plugin inschakelen?';
