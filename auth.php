@@ -260,8 +260,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
         }
         // Check if already blocked.
         if ($this->iphammer->blocked) {
-            throw new \auth_antihammer\exception('Hammering detected: IP address = ' .
-                    $this->iphammer->ip . ' (IP is blocked)');
+            throw new \auth_antihammer\exception('err:blocked:ip', '', $this->iphammer);
         }
 
         $this->iphammer->ip = $this->currentip;
@@ -284,8 +283,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
                 auth_antihammer\antihammer::add_blocked_ip_to_global($this->iphammer->ip);
             }
 
-            throw new \auth_antihammer\exception('Hammering detected: IP address = ' .
-                    $this->iphammer->ip . ' (IP is blocked)');
+            throw new \auth_antihammer\exception('err:blocked:ip', '', $this->iphammer);
         }
     }
 
@@ -307,8 +305,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
         $this->userhammer = \auth_antihammer\antihammer::find($params);
         // Check if already blocked.
         if ($this->userhammer->blocked) {
-            throw new \auth_antihammer\exception('Hammering detected: Username=' . $username .
-                    '; IP address = ' . $this->userhammer->ip . ' (IP and/or username is blocked)');
+            throw new \auth_antihammer\exception('err:blocked:user', '', $this->userhammer);
         }
 
         $this->userhammer->username = $username;
@@ -328,8 +325,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
         $this->userhammer->save();
 
         if ($this->userhammer->blocked) {
-            throw new \auth_antihammer\exception('Hammering detected: Username=' . $username .
-                    '; IP address = ' . $this->userhammer->ip . ' (IP and/or username is blocked)');
+            throw new \auth_antihammer\exception('err:blocked:user', '', $this->userhammer);
         }
     }
 

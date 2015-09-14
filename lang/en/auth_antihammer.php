@@ -107,3 +107,5 @@ $string['addcfgipblock'] = 'Add blocked IP to site configuration';
 $string['addcfgipblock_desc'] = 'Check this option if you wish to add a blocked IP to the global list of <a href="{$a}">blocked IP addresses</a>.';
 $string['task:logcleaner'] = 'Antihammer log cleaner';
 $string['config:autocleanlog:disabled'] = 'Automatic cleaning of antihammer logs is disabled in the global configuration';
+$string['err:blocked:ip'] = 'Hammering detected: IP address = {$a->ip} (IP is blocked)';
+$string['err:blocked:user'] = 'Hammering detected: Username= {$a->username} IP address = {$a->ip} (IP and/or username is blocked)';

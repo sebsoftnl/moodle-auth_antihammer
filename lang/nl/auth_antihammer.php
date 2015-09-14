@@ -107,3 +107,5 @@ $string['addcfgipblock'] = 'Toevoegen IP blokkade aan site configuratie';
 $string['addcfgipblock_desc'] = 'Vink deze optie aan als je een IP blokkade tevens wilt toevoegen aan de systeemlijst met <a href="{$a}">geblokkeerde IP addressen</a>.';
 $string['task:logcleaner'] = 'Antihammer logs opschonen';
 $string['config:autocleanlog:disabled'] = 'Automatisch opschonen van antihammer logs is uitgezet in de globale configuratie';
+$string['err:blocked:ip'] = 'Hammering gedetecteerd: IP adres = {$a->ip} (IP is geblokkeerd)';
+$string['err:blocked:user'] = 'Hammering gedetecteerd: Gebruikersnaam = {$a->username} IP adres = {$a->ip} (IP en/of gebruikersnaam is geblokkeerd)';
