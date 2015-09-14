@@ -17,20 +17,22 @@
 /**
  * Logmessage object class for auth antihammer
  *
- * File         : logmessage.php
- * Encoding     : UTF-8
+ * File         logmessage.php
+ * Encoding     UTF-8
  *
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * */
+ */
 
 namespace auth_antihammer;
 
 /**
  * \auth_antihammer\logmessage
+ *
+ * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
@@ -159,7 +161,7 @@ class logmessage {
     /**
      * sets the primary key identifier
      * @param int $id record primary key identifier
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\logmessage
      */
     public function set_id($id) {
         $this->id = $id;
@@ -169,7 +171,7 @@ class logmessage {
     /**
      * sets the ID of the moodle user that caused this record to be inserted
      * @param int $userid
-     * @return \auth_antihammer\status
+     * @return \auth_antihammer\logmessage
      */
     public function set_userid($userid) {
         $this->userid = $userid;
@@ -301,7 +303,7 @@ class logmessage {
 
     /**
      * Insert a log message
-     * 
+     *
      * @param string $type message type
      * @param string $msg message
      * @param string $module module
@@ -329,7 +331,7 @@ class logmessage {
 
     /**
      * Insert an info log message
-     * 
+     *
      * @param string $msg message
      * @param string $module module
      * @param string $action action
@@ -344,7 +346,7 @@ class logmessage {
 
     /**
      * Insert a warning log message
-     * 
+     *
      * @param string $msg message
      * @param string $module module
      * @param string $action action
@@ -359,7 +361,7 @@ class logmessage {
 
     /**
      * Insert an error log message
-     * 
+     *
      * @param string $msg message
      * @param string $module module
      * @param string $action action

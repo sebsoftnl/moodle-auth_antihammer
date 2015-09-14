@@ -15,34 +15,51 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Status object class for auth antihammer
+ * antihammer object class for auth antihammer
  *
- * File         : status.php
- * Encoding     : UTF-8
+ * File         antihammer.php
+ * Encoding     UTF-8
  *
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * */
+ */
 
 namespace auth_antihammer;
 
 /**
- * auth_antihammer\status
+ * auth_antihammer\antihammer
+ *
+ * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class status {
+class antihammer {
+
+    /**
+     * Blocking type IP
+     */
+    const TYPE_IP = 'ip';
+
+    /**
+     * Blocking type USER
+     */
+    const TYPE_USER = 'user';
 
     /**
      * primary key identifier
      * @var int
      */
     public $id = 0;
+    /**
+     * antihammering type
+     * @var string
+     */
+    public $type = '';
     /**
      * ID of the detected moodle user for which hammering could be detected
      * @var int
@@ -86,6 +103,14 @@ class status {
      */
     public function get_id() {
         return $this->id;
+    }
+
+    /**
+     * get the antihammering type identifier
+     * @return string antihammering type
+     */
+    public function get_type() {
+        return $this->type;
     }
 
     /**
@@ -148,10 +173,20 @@ class status {
     /**
      * sets the primary key identifier
      * @param int $id record primary key identifier
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\antihammer
      */
     public function set_id($id) {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * set the antihammering type
+     * @param string $type
+     * @return \auth_antihammer\status
+     */
+    public function set_type($type) {
+        $this->type = $type;
         return $this;
     }
 
@@ -178,7 +213,7 @@ class status {
     /**
      * sets the IP address
      * @param string $ip IP address
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\antihammer
      */
     public function set_ip($ip) {
         $this->ip = $ip;
@@ -188,7 +223,7 @@ class status {
     /**
      * sets the hammering counter
      * @param int $count
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\antihammer
      */
     public function set_count($count) {
         $this->count = $count;
@@ -199,7 +234,7 @@ class status {
      * sets timestamp indicating when the record is first created.
      * This is used to determine blocking based on configuration
      * @param int $firstattempt timestamp of first occurance
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\antihammer
      */
     public function set_firstattempt($firstattempt) {
         $this->firstattempt = $firstattempt;
@@ -209,7 +244,7 @@ class status {
     /**
      * sets whether or not the IP address is blocked
      * @param int $blocked
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\antihammer
      */
     public function set_blocked($blocked) {
         $this->blocked = $blocked;
@@ -219,7 +254,7 @@ class status {
     /**
      * set the timestamp indicating when this record will be removed
      * @param int $blocktime
-     * @return \auth_antihammer\hammer
+     * @return \auth_antihammer\antihammer
      */
     public function set_blocktime($blocktime) {
         $this->blocktime = $blocktime;
@@ -240,52 +275,6 @@ class status {
     }
 
     /**
-     * Create new instance based on given parameters
-     *
-     * @param \stdClass $obj
-     * @return \self
-     */
-    public static final function create_from_object($obj) {
-        $self = new self();
-        $self->set_from_object($obj);
-        return $self;
-    }
-
-    /**
-     * Find an instance in the database based on the given parameters.
-     * If nothing is found, this method created a new "empty" instance
-     *
-     * @param array $params
-     * @return \auth_hammer\status
-     */
-    static public final function find($params) {
-        global $DB;
-        $record = $DB->get_record('auth_antihammer_status', $params);
-        if ($record !== false) {
-            return self::create_from_object($record);
-        } else {
-            $self = new self();
-            $self->firstattempt = time();
-            return $self;
-        }
-    }
-
-    /**
-     * Find all statusses based on the given conditions
-     *
-     * @param array $params
-     * @param int $start
-     * @param int $limit
-     * @return array 
-     */
-    static public final function find_all($params, $start, $limit) {
-        global $DB;
-        $sort = '';
-        $fields = '*';
-        return $DB->get_records('auth_antihammer_status', $params, $sort, $fields, $start, $limit);
-    }
-
-    /**
      * Save (insert or update) this instance to the database
      *
      * @return bool true if inserted or correctly updated, false otherwise
@@ -293,9 +282,9 @@ class status {
     public function save() {
         global $DB;
         if ($this->id > 0) {
-            return $DB->update_record('auth_antihammer_status', $this);
+            return $DB->update_record('auth_antihammer', $this);
         } else {
-            $this->id = $DB->insert_record('auth_antihammer_status', $this);
+            $this->id = $DB->insert_record('auth_antihammer', $this);
         }
         return true;
     }
@@ -308,9 +297,174 @@ class status {
     public function delete() {
         global $DB;
         if ($this->id > 0) {
-            return $DB->delete_records('auth_antihammer_status', array('id' => $this->id));
+            $config = get_config('auth_antihammer');
+            if ((bool)$config->addcfgipblock && $this->type === self::TYPE_IP && $this->blocked) {
+                self::remove_blocked_ip_from_global($this->ip);
+            }
+            return $DB->delete_records('auth_antihammer', array('id' => $this->id));
         }
         return false;
+    }
+
+    /**
+     * Create new instance based on given parameters
+     *
+     * @param \stdClass $obj
+     * @return \self
+     */
+    static public final function create_from_object($obj) {
+        $self = new self();
+        $self->set_from_object($obj);
+        return $self;
+    }
+
+    /**
+     * Find an instance in the database based on the given parameters.
+     * If nothing is found, this method created a new "empty" instance
+     *
+     * @param array $params
+     * @return \auth_hammer\hammer
+     */
+    static public final function find($params) {
+        global $DB;
+        $sql = "SELECT * FROM {auth_antihammer} WHERE ";
+        $conditions = array();
+        foreach ($params as $key => $unused) {
+            $conditions[] = "$key = ?";
+        }
+        $sql .= implode(' AND ', $conditions) . " ORDER BY blocked DESC, firstattempt DESC";
+        $record = $DB->get_record_sql($sql, array_values($params));
+        if ($record !== false) {
+            return self::create_from_object($record);
+        } else {
+            $self = new self();
+            $self->firstattempt = time();
+            $self->type = (isset($params['type']) ? $params['type'] : self::TYPE_USER);
+            return $self;
+        }
+    }
+
+    /**
+     * Find all hammering records based on the given conditions
+     *
+     * @param array $params
+     * @param int $start
+     * @param int $limit
+     * @return array
+     */
+    static public final function find_all($params, $start, $limit) {
+        global $DB;
+        $sort = '';
+        $fields = '*';
+        return $DB->get_records('auth_antihammer', $params, $sort, $fields, $start, $limit);
+    }
+
+    /**
+     * Clean IP hammering status records if configured (based on clearing settings)
+     *
+     * @param \stdClass $config auth_antihammer configuration
+     *
+     * @return void
+     */
+    static public function clean_ip_hammering($config = null) {
+        global $DB;
+        if ($config === null) {
+            $config = get_config('auth_antihammer');
+        }
+
+        // Clean if attempts are below count taking the time into account.
+        $cleantime = time() - $config->ip_attemptcounter;
+        $params = array(self::TYPE_IP, $config->ip_attempts, $cleantime);
+        $DB->delete_records_select('auth_antihammer', 'type = ? AND count < ? AND firstattempt < ?', $params);
+
+        if (!(bool) $config->autoclear_ipblock) {
+            return;
+        }
+        // Clean all blocked.
+        $cleantime = time() - $config->autoclear_ipblock_after;
+        $params = array(self::TYPE_IP, $cleantime);
+        $DB->delete_records_select('auth_antihammer', 'type = ? AND blocktime < ? AND blocked = 1', $params);
+    }
+
+    /**
+     * Clean user hammering status records if configured (based on clearing settings)
+     *
+     * @param \stdClass $config auth_antihammer configuration
+     *
+     * @return void
+     */
+    static public function clean_user_hammering($config = null) {
+        global $DB;
+        if ($config === null) {
+            $config = get_config('auth_antihammer');
+        }
+
+        // Clean if attempts are below count taking the time into account.
+        $cleantime = time() - $config->attemptcounter;
+        $params = array(self::TYPE_USER, $config->attempts, $cleantime);
+        $DB->delete_records_select('auth_antihammer', 'type = ? AND count < ? AND firstattempt < ?', $params);
+
+        if (!(bool) $config->autoclear_userblock) {
+            return;
+        }
+        // Clean all blocked.
+        $cleantime = time() - $config->autoclear_userblock_after;
+        $params = array(self::TYPE_USER, $cleantime);
+        if ((bool)$config->addcfgipblock) {
+            $iplist = $DB->get_fieldset_select('auth_antihammer', 'ip', 'type = ? AND blocktime < ? AND blocked = 1', $params);
+            $iplist = array_unique($iplist);
+            foreach ($iplist as $ipaddress) {
+                self::remove_blocked_ip_from_global($ipaddress);
+            }
+        }
+        $DB->delete_records_select('auth_antihammer', 'type = ? AND blocktime < ? AND blocked = 1', $params);
+    }
+
+    /**
+     * Clean specified user based on username (static for external usage)
+     *
+     * @param string $username
+     */
+    static public function clean_for_user($username) {
+        global $DB;
+        $params = array($username);
+        $DB->delete_records_select('auth_antihammer', 'username = ', $params);
+    }
+
+    /**
+     * Clean specified user based on userid (static for external usage)
+     *
+     * @param string $userid
+     */
+    static public function clean_for_userid($userid) {
+        global $DB;
+        $params = array($userid);
+        $DB->delete_records_select('auth_antihammer', 'userid = ', $params);
+    }
+
+    /**
+     * Add IP block to global configuration
+     *
+     * @param string $ipaddress
+     */
+    static public function add_blocked_ip_to_global($ipaddress) {
+        $addresses = explode("\n", get_config('core', 'blockedip'));
+        $addresses[] = $ipaddress;
+        set_config('blockedip', implode("\n", $addresses));
+    }
+
+    /**
+     * Remove IP block from global configuration
+     *
+     * @param string $ipaddress
+     */
+    static public function remove_blocked_ip_from_global($ipaddress) {
+        $addresses = explode("\n", get_config('core', 'blockedip'));
+        $idx = array_search($ipaddress, $addresses);
+        if ($idx !== false) {
+            unset($addresses[$idx]);
+            set_config('blockedip', implode("\n", $addresses));
+        }
     }
 
 }

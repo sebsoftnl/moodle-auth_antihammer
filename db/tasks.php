@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * exception class for auth antihammer
+ * Tasks performed by auth antihammer
  *
- * File         exception.php
+ * File         tasks.php
  * Encoding     UTF-8
  *
  * @package     auth_antihammer
@@ -26,30 +26,16 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
-namespace auth_antihammer;
-
-/**
- * auth_antihammer\exception
- *
- * @package     auth_antihammer
- *
- * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class exception extends \moodle_exception {
-
-    /**
-     * Create a new instance of the exception
-     *
-     * @param string $errorcode
-     * @param string $link
-     * @param \stdClass|null $a
-     * @param string $debuginfo
-     */
-    public function __construct($errorcode, $link = '', $a = null, $debuginfo = null) {
-        parent::__construct($errorcode, 'auth_antihammer', $link, $a, $debuginfo);
-    }
-
-}
+$tasks = array(
+    array(
+        'classname' => 'auth_antihammer\logcleaner',
+        'blocking'  => 0,
+        'minute'    => '0',
+        'hour'      => '*/1',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*'
+    ),
+);

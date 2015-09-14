@@ -13,13 +13,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
-label.antihammer{
-    color: #999999;
-    font-size: 10pt;
-    width: 200px;
-}
+ * Styles for auth antihammer
+ *
+ * File         styles.css
+ * Encoding     UTF-8
+ *
+ * @package     auth_antihammer
+ *
+ * @copyright   Sebsoft.nl
+ * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 div.auth-antihammer-logopromo a img {
     height: 37px;
 }

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * exception class for auth antihammer
+ * message providers for auth_antihammer
  *
- * File         exception.php
+ * File         messages.php
  * Encoding     UTF-8
  *
  * @package     auth_antihammer
@@ -26,30 +26,15 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace auth_antihammer;
-
-/**
- * auth_antihammer\exception
- *
- * @package     auth_antihammer
- *
- * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class exception extends \moodle_exception {
-
-    /**
-     * Create a new instance of the exception
-     *
-     * @param string $errorcode
-     * @param string $link
-     * @param \stdClass|null $a
-     * @param string $debuginfo
-     */
-    public function __construct($errorcode, $link = '', $a = null, $debuginfo = null) {
-        parent::__construct($errorcode, 'auth_antihammer', $link, $a, $debuginfo);
-    }
-
-}
+defined('MOODLE_INTERNAL') || die();
+$messageproviders = array (
+    // Notify someone about blocked useraccounts or IPs.
+    'antihammerblocking' => array (
+        'capability'  => 'auth/antihammer:notifyblocking',
+        'defaults' => array(
+            'popup' => MESSAGE_PERMITTED,
+            'email' => MESSAGE_PERMITTED,
+            'anyotheroutput' => MESSAGE_PERMITTED
+        )
+    ),
+);

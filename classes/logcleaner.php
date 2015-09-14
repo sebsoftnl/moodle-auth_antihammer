@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * exception class for auth antihammer
+ * Logcleaner task implementation for auth antihammer
  *
- * File         exception.php
+ * File         logcleaner.php
  * Encoding     UTF-8
  *
  * @package     auth_antihammer
@@ -30,7 +30,7 @@
 namespace auth_antihammer;
 
 /**
- * auth_antihammer\exception
+ * auth_antihammer\logcleaner
  *
  * @package     auth_antihammer
  *
@@ -38,18 +38,30 @@ namespace auth_antihammer;
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class exception extends \moodle_exception {
+class logcleaner extends \core\task\scheduled_task {
 
     /**
-     * Create a new instance of the exception
+     * Return the localised name for this task
      *
-     * @param string $errorcode
-     * @param string $link
-     * @param \stdClass|null $a
-     * @param string $debuginfo
+     * @return string task name
      */
-    public function __construct($errorcode, $link = '', $a = null, $debuginfo = null) {
-        parent::__construct($errorcode, 'auth_antihammer', $link, $a, $debuginfo);
+    public function get_name() {
+        return get_string('task:logcleaner', 'auth_antihammer');
+    }
+
+    /**
+     * Executes the task
+     *
+     * @return void
+     */
+    public function execute() {
+        global $DB;
+        if (!(bool)config::get('autocleanlog')) {
+            mtrace(get_string('config:autocleanlog:disabled', 'auth_antihammer'));
+            return;
+        }
+        $sql = "DELET FROM {auth_antihammer_log} WHERE datecreated < ?";
+        return $DB->delete_records($sql, array(time() - (int)config::get('autocleanlog_after')));
     }
 
 }

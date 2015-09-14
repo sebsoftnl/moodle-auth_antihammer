@@ -17,19 +17,19 @@
 /**
  * Version information for auth antihammer
  *
- * File         : version.php
- * Encoding     : UTF-8
+ * File         version.php
+ * Encoding     UTF-8
  *
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
+ */
 defined('MOODLE_INTERNAL') || die();
 $plugin = new stdClass();
-$plugin->version   = 2013111800;
-$plugin->release   = '2.6.0';
+$plugin->version   = 2015080100;
+$plugin->release   = '2.7.0 (build 2015080100)';
 $plugin->requires  = 2013111800;        // YYYYMMDDHH (This is the release version for Moodle 2.6).
 $plugin->component = 'auth_antihammer'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
