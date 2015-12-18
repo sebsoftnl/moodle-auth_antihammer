@@ -49,7 +49,7 @@ switch($page) {
                 require_sesskey();
                 $id = required_param('id', PARAM_INT);
                 $DB->delete_records('auth_antihammer_log', array('id' => $id));
-                redirect($PAGE->url);
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
                 break;
 
             case 'details':
@@ -72,7 +72,7 @@ switch($page) {
                 require_sesskey();
                 $id = required_param('id', PARAM_INT);
                 $DB->delete_records('auth_antihammer', array('id' => $id));
-                redirect($PAGE->url);
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
                 break;
 
             case 'list':
