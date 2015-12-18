@@ -30,21 +30,59 @@ require_once("../../config.php");
 require_once($CFG->libdir . "/adminlib.php");
 
 $page = required_param('page', PARAM_ALPHA);
+$action = optional_param('action', 'list', PARAM_ALPHAEXT);
+
 admin_externalpage_setup($page);
 require_capability('auth/antihammer:administration', context_system::instance());
 
-$pageurl = new moodle_url('/auth/antihammer/admin.php', array('page' => $page));
+$pageparams = array('page' => $page, 'action' => $action);
+$pageurl = new moodle_url('/auth/antihammer/admin.php', $pageparams);
 $PAGE->set_url($pageurl);
 $PAGE->set_heading($SITE->fullname);
 
 $renderer = $PAGE->get_renderer('auth_antihammer');
 switch($page) {
     case 'aplog':
-        echo $renderer->admin_page_logs();
+        switch ($action) {
+            case 'delete':
+                require_capability('auth/antihammer:delete', context_system::instance());
+                require_sesskey();
+                $id = required_param('id', PARAM_INT);
+                $DB->delete_records('auth_antihammer_log', array('id' => $id));
+                redirect($PAGE->url);
+                break;
+
+            case 'details':
+                $id = required_param('id', PARAM_INT);
+                echo $renderer->admin_page_logs_details($id);
+                break;
+
+            case 'list':
+            default:
+                $PAGE->set_title(get_string('title:report:logs', 'auth_antihammer'));
+                echo $renderer->admin_page_logs_overview();
+                break;
+        }
         break;
+
     case 'apreport':
-        echo $renderer->admin_page_report();
+        switch ($action) {
+            case 'delete':
+                require_capability('auth/antihammer:delete', context_system::instance());
+                require_sesskey();
+                $id = required_param('id', PARAM_INT);
+                $DB->delete_records('auth_antihammer', array('id' => $id));
+                redirect($PAGE->url);
+                break;
+
+            case 'list':
+            default:
+                $PAGE->set_title(get_string('title:report:hammer', 'auth_antihammer'));
+                echo $renderer->admin_page_report_overview();
+                break;
+        }
         break;
+
     default:
         break;
 }

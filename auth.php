@@ -65,7 +65,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
     public function __construct() {
         $this->authtype = 'antihammer';
         $this->config = get_config('auth_antihammer');
-        $this->currentip = $this->get_ip();
+        $this->currentip = getremoteaddr();
     }
 
     /**
@@ -161,7 +161,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
             if (!empty($this->config->blockpage)) {
                 redirect(new moodle_url($this->config->blockpage));
             } else {
-                redirect('/auth/antihammer/blocked.php');
+                redirect(new moodle_url('/auth/antihammer/blocked.php'));
             }
         }
 
@@ -200,7 +200,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
             if (!empty($this->config->blockpage)) {
                 redirect(new moodle_url($this->config->blockpage));
             } else {
-                redirect('/auth/antihammer/blocked.php');
+                redirect(new moodle_url('/auth/antihammer/blocked.php'));
             }
         }
     }
@@ -327,22 +327,6 @@ class auth_plugin_antihammer extends auth_plugin_base {
         if ($this->userhammer->blocked) {
             throw new \auth_antihammer\exception('err:blocked:user', '', $this->userhammer);
         }
-    }
-
-    /**
-     * Detect the IP address of current request
-     *
-     * @return string IP address
-     */
-    protected function get_ip() {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-        return $ip;
     }
 
 }

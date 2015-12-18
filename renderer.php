@@ -41,96 +41,62 @@ class auth_antihammer_renderer extends plugin_renderer_base {
     /**
      * Display logs page for administrators
      */
-    public function admin_page_logs() {
-        $action = optional_param('action', 'list', PARAM_ALPHAEXT);
-        $pageurl = clone $this->page->url;
-        $pageurl->param('action', $action);
+    public function admin_page_logs_overview() {
+        $table = new \auth_antihammer\table(\auth_antihammer\table::LOG);
+        $table->baseurl = $this->page->url;
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('auth-antihammer-container');
+        $out .= html_writer::start_div('auth-antihammer-tabs');
+        $out .= $this->admin_tabs('aplog');
+        $out .= html_writer::end_div();
+        ob_start();
+        $table->render(25);
+        $out .= ob_get_clean();
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
+        return $out;
+    }
 
-        switch ($action) {
-            case 'delete':
-                global $DB;
-                require_capability('auth/antihammer:delete', context_system::instance());
-                require_sesskey();
-                $id = required_param('id', PARAM_INT);
-                $DB->delete_records('auth_antihammer_log', array('id' => $id));
-                redirect($this->page->url);
-                break;
-
-            case 'details':
-                $id = required_param('id', PARAM_INT);
-                $record = \auth_antihammer\logmessage::get_by_id($id);
-                $out = '';
-                $out .= $this->header();
-                $out .= html_writer::start_div('auth-antihammer-container');
-                $out .= html_writer::start_div('auth-antihammer-tabs');
-                $out .= $this->admin_tabs('logdetails');
-                $out .= html_writer::end_div();
-                $record->data = unserialize($record->data);
-                $datefields = array('datecreated', 'blocktime', 'firstattempt');
-                $out .= $this->obj_to_table($record, 1, 5, array('id'), $datefields);
-                $out .= html_writer::end_div();
-                $out .= $this->footer();
-                return $out;
-                break;
-
-            case 'list':
-            default:
-                $this->page->set_title(get_string('title:report:logs', 'auth_antihammer'));
-                $table = new \auth_antihammer\table(\auth_antihammer\table::LOG);
-                $table->baseurl = $pageurl;
-                $out = '';
-                $out .= $this->header();
-                $out .= html_writer::start_div('auth-antihammer-container');
-                $out .= html_writer::start_div('auth-antihammer-tabs');
-                $out .= $this->admin_tabs('aplog');
-                $out .= html_writer::end_div();
-                ob_start();
-                $table->render(25);
-                $out .= ob_get_clean();
-                $out .= html_writer::end_div();
-                $out .= $this->footer();
-                return $out;
-                break;
-        }
+    /**
+     * Display detail logs page for administrators
+     *
+     * @param int $recordid the logmessage record id
+     */
+    public function admin_page_logs_details($recordid) {
+        $record = \auth_antihammer\logmessage::get_by_id($recordid);
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('auth-antihammer-container');
+        $out .= html_writer::start_div('auth-antihammer-tabs');
+        $out .= $this->admin_tabs('logdetails');
+        $out .= html_writer::end_div();
+        $record->data = unserialize($record->data);
+        $datefields = array('datecreated', 'blocktime', 'firstattempt');
+        $out .= $this->obj_to_table($record, 1, 5, array('id'), $datefields);
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
+        return $out;
     }
 
     /**
      * Display report page for administrators
      */
-    public function admin_page_report() {
-        $action = optional_param('action', 'list', PARAM_ALPHAEXT);
-        $pageurl = clone $this->page->url;
-        $pageurl->param('action', $action);
-
-        switch ($action) {
-            case 'delete':
-                global $DB;
-                require_capability('auth/antihammer:delete', context_system::instance());
-                require_sesskey();
-                $id = required_param('id', PARAM_INT);
-                $DB->delete_records('auth_antihammer', array('id' => $id));
-                redirect($this->page->url);
-                break;
-
-            case 'list':
-            default:
-                $this->page->set_title(get_string('title:report:hammer', 'auth_antihammer'));
-                $table = new \auth_antihammer\table(\auth_antihammer\table::HAMMER);
-                $table->baseurl = $pageurl;
-                $out = '';
-                $out .= $this->header();
-                $out .= html_writer::start_div('auth-antihammer-container');
-                $out .= html_writer::start_div('auth-antihammer-tabs');
-                $out .= $this->admin_tabs('apreport');
-                $out .= html_writer::end_div();
-                ob_start();
-                $table->render(25);
-                $out .= ob_get_clean();
-                $out .= html_writer::end_div();
-                $out .= $this->footer();
-                return $out;
-                break;
-        }
+    public function admin_page_report_overview() {
+        $table = new \auth_antihammer\table(\auth_antihammer\table::HAMMER);
+        $table->baseurl = $this->page->url;
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('auth-antihammer-container');
+        $out .= html_writer::start_div('auth-antihammer-tabs');
+        $out .= $this->admin_tabs('apreport');
+        $out .= html_writer::end_div();
+        ob_start();
+        $table->render(25);
+        $out .= ob_get_clean();
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
+        return $out;
     }
 
     /**
