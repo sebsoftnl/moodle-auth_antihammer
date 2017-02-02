@@ -60,8 +60,7 @@ class logcleaner extends \core\task\scheduled_task {
             mtrace(get_string('config:autocleanlog:disabled', 'auth_antihammer'));
             return;
         }
-        $sql = "DELET FROM {auth_antihammer_log} WHERE datecreated < ?";
-        return $DB->delete_records($sql, array(time() - (int)config::get('autocleanlog_after')));
+        $DB->delete_records_select('auth_antihammer_log', 'datecreated < ?', array(time() - (int)config::get('autocleanlog_after')));
     }
 
 }
