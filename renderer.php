@@ -27,6 +27,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * auth_antihammer_renderer
  *
@@ -184,8 +186,10 @@ class auth_antihammer_renderer extends plugin_renderer_base {
             if (in_array($k, $skipfields)) {
                 continue;
             }
-            $head = (get_string_manager()->string_exists('thead:' . $k, 'auth_antihammer') ?
-                    get_string('thead:' . $k, 'auth_antihammer') : $k);
+            $head = $k;
+            if (get_string_manager()->string_exists('thead:' . $k, 'auth_antihammer')) {
+                    $head = get_string('thead:' . $k, 'auth_antihammer');
+            }
             $str .= '<tr><td>' . $head . '</td>';
             if (is_object($v) || is_array($v)) {
                 $str .= '<td>' . $this->obj_to_table($v, $depth + 1, $maxdepth, $skipfields, $datefields) . '</td>';

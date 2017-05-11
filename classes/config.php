@@ -14,7 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * config class for auth antihammer
+ *
+ * File         config.php
+ * Encoding     UTF-8
+ *
+ * @package     auth_antihammer
+ *
+ * @copyright   Sebsoft.nl
+ * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace auth_antihammer;
+
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * auth_antihammer\config
@@ -98,7 +113,12 @@ class config {
         self::init();
     }
 
-    static function generate_callback_for($name) {
+    /**
+     * Generate a callback for a setting
+     * @param string $name
+     * @return array
+     */
+    public static function generate_callback_for($name) {
         global $CFG;
         $value = self::get($name);
         if ($value === null) {
