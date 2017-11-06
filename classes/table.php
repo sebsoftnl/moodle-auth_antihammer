@@ -195,7 +195,7 @@ class table extends \table_sql {
                 ));
         $fields = 'h.*,NULL AS action';
         $where = '1 = 1';
-        $params = null;
+        $params = array();
         parent::set_sql($fields, '{auth_antihammer} h', $where, $params);
         $this->out($pagesize, $useinitialsbar);
     }
@@ -219,7 +219,7 @@ class table extends \table_sql {
                 ));
         $fields = 'l.*,NULL AS action';
         $where = '1 = 1';
-        $params = null;
+        $params = array();
         parent::set_sql($fields, '{auth_antihammer_log} l', $where, $params);
         $this->out($pagesize, $useinitialsbar);
     }
