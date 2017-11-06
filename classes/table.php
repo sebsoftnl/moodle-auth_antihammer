@@ -333,7 +333,7 @@ class table extends \table_sql {
     protected function get_action_image($action) {
         global $OUTPUT;
         $actionstr = 'str' . $action . $this->displaytype;
-        return '<img src="' . $OUTPUT->pix_url($action, 'auth_antihammer') .
+        return '<img src="' . $OUTPUT->image_url($action, 'auth_antihammer') .
                 '" title="' . $this->{$actionstr} . '"/>';
     }
 

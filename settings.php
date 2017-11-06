@@ -33,9 +33,9 @@ if ($ADMIN->fulltree) {
     $config = get_config('auth_antihammer');
     // Logo.
     $image = '<a href="http://www.sebsoft.nl" target="_new"><img src="' .
-            $OUTPUT->pix_url('logo', 'auth_antihammer') . '" /></a>&nbsp;&nbsp;&nbsp;';
+            $OUTPUT->image_url('logo', 'auth_antihammer') . '" /></a>&nbsp;&nbsp;&nbsp;';
     $donate = '<a href="https://customerpanel.sebsoft.nl/sebsoft/donate/intro.php" target="_new"><img src="' .
-            $OUTPUT->pix_url('donate', 'auth_antihammer') . '" /></a>';
+            $OUTPUT->image_url('donate', 'auth_antihammer') . '" /></a>';
     $header = '<div class="auth-antihammer-logopromo">' . $image . $donate . '</div>';
     $settings->add(new admin_setting_heading('auth_antihammer_logopromo',
             get_string('promo', 'auth_antihammer'),
