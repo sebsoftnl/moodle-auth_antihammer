@@ -27,7 +27,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // No login check is expected since this is ONLY a notification page.
-// @codingStandardsIgnoreLinerequire_once("../../config.php");
+// @codingStandardsIgnoreLine
+require_once("../../config.php");
 $pageurl = new moodle_url('/auth/antihammer/blocked.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url($pageurl);
