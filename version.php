@@ -28,9 +28,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 $plugin = new stdClass();
-$plugin->version   = 2017092501;
-$plugin->requires  = 2017050300;      // YYYYMMDDHH (This is the release version for Moodle 3.3BETA).
-$plugin->release   = '3.3.0 (build 2017092501)';
+$plugin->version   = 2018050300;
+$plugin->requires  = 2018050200;      // YYYYMMDDHH (This is the release version for Moodle 3.5).
+$plugin->release   = '3.5.0 (build 2018050300)';
 $plugin->component = 'auth_antihammer'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->cron      = 0;

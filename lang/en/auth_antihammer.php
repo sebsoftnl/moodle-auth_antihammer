@@ -109,3 +109,13 @@ $string['task:logcleaner'] = 'Antihammer log cleaner';
 $string['config:autocleanlog:disabled'] = 'Automatic cleaning of antihammer logs is disabled in the global configuration';
 $string['err:blocked:ip'] = 'Hammering detected: IP address = {$a->ip} (IP is blocked)';
 $string['err:blocked:user'] = 'Hammering detected: Username= {$a->username} IP address = {$a->ip} (IP and/or username is blocked)';
+
+$string['privacy:metadata:auth_antihammer:userid'] = 'The primary key of the Moodle user for which hammering is temporarily logged.';
+$string['privacy:metadata:auth_antihammer:username'] = 'The attempted username in Moodle for which hammering is temporarily logged.';
+$string['privacy:metadata:auth_antihammer:ip'] = 'IP address of the detected user for which hammering is temporarily logged';
+$string['privacy:metadata:auth_antihammer:blocked'] = 'Indication whether or not the user is temporarily blocked.';
+$string['privacy:metadata:auth_antihammer:firstattempt'] = 'Time the record was first created.';
+$string['privacy:metadata:auth_antihammer:blocktime'] = 'Time until the user is blocked.';
+$string['privacy:metadata:auth_antihammer_log:userid'] = 'The primary key of the Moodle user for which hammering is temporarily logged.';
+$string['privacy:metadata:auth_antihammer_log:data'] = 'Serialized information stored for this user, which is a serialized version of the antihammer data including the username and IP address.';
+$string['privacy:metadata:auth_antihammer_log:datecreated'] = 'Time the record was created.';

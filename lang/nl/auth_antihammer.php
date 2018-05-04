@@ -109,3 +109,13 @@ $string['task:logcleaner'] = 'Antihammer logs opschonen';
 $string['config:autocleanlog:disabled'] = 'Automatisch opschonen van antihammer logs is uitgezet in de globale configuratie';
 $string['err:blocked:ip'] = 'Hammering gedetecteerd: IP adres = {$a->ip} (IP is geblokkeerd)';
 $string['err:blocked:user'] = 'Hammering gedetecteerd: Gebruikersnaam = {$a->username} IP adres = {$a->ip} (IP en/of gebruikersnaam is geblokkeerd)';
+
+$string['privacy:metadata:auth_antihammer:userid'] = 'De primaire database sleutel van de Moodle gebruiker voor wie "hammering" tijdelijk is/wordt gelogd.';
+$string['privacy:metadata:auth_antihammer:username'] = 'De gebruikersnaam van de Moodle gebruiker voor wie "hammering" tijdelijk is gelogd.';
+$string['privacy:metadata:auth_antihammer:ip'] = 'IP adres van de Moodle gebruiker voor wie "hammering" tijdelijk is gelogd.';
+$string['privacy:metadata:auth_antihammer:blocked'] = 'Indicatie of de gedetecteerde Moodle gebruiker tijdelijk is geblokkeerd.';
+$string['privacy:metadata:auth_antihammer:firstattempt'] = 'Tijdstip waarop de gegevens zijn aangemaakt.';
+$string['privacy:metadata:auth_antihammer:blocktime'] = 'Tijdstip tot wanneer de gebruiker is geblokkeerd.';
+$string['privacy:metadata:auth_antihammer_log:userid'] = 'De primaire database sleutel van de Moodle gebruiker voor wie "hammering" tijdelijk is gelogd.';
+$string['privacy:metadata:auth_antihammer_log:data'] = 'Geserialiseerde informatie voor de Moodlle gebruiker, welke onder andere de gedetecteerde gebruikersnaam en het IP adres bevat.';
+$string['privacy:metadata:auth_antihammer_log:datecreated'] = 'Tijdstip waarop de gegevens zijn aangemaakt.';
