@@ -119,3 +119,5 @@ $string['privacy:metadata:auth_antihammer:blocktime'] = 'Tijdstip tot wanneer de
 $string['privacy:metadata:auth_antihammer_log:userid'] = 'De primaire database sleutel van de Moodle gebruiker voor wie "hammering" tijdelijk is gelogd.';
 $string['privacy:metadata:auth_antihammer_log:data'] = 'Geserialiseerde informatie voor de Moodlle gebruiker, welke onder andere de gedetecteerde gebruikersnaam en het IP adres bevat.';
 $string['privacy:metadata:auth_antihammer_log:datecreated'] = 'Tijdstip waarop de gegevens zijn aangemaakt.';
+$string['privacy:metadata:auth_antihammer'] = 'Authenticatiemethode antihammer slaat gegevens op gerelateerd aan (hammering) login pogingen voor gebruikers';
+$string['privacy:metadata:auth_antihammer_log'] = 'Authenticatiemethode antihammer log slaat historische/log gegevens op gerelateerd aan (hammering) login pogingen voor gebruikers';

@@ -119,3 +119,5 @@ $string['privacy:metadata:auth_antihammer:blocktime'] = 'Time until the user is 
 $string['privacy:metadata:auth_antihammer_log:userid'] = 'The primary key of the Moodle user for which hammering is temporarily logged.';
 $string['privacy:metadata:auth_antihammer_log:data'] = 'Serialized information stored for this user, which is a serialized version of the antihammer data including the username and IP address.';
 $string['privacy:metadata:auth_antihammer_log:datecreated'] = 'Time the record was created.';
+$string['privacy:metadata:auth_antihammer'] = 'Auth method antihammer stores (temporary) information related to (hammering) login attempts for user';
+$string['privacy:metadata:auth_antihammer_log'] = 'Auth method antihammer stores historical/logging information related to (hammering) login attempts for user';
