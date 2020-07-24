@@ -93,6 +93,8 @@ class auth_antihammer_renderer extends plugin_renderer_base {
         $out .= html_writer::start_div('auth-antihammer-tabs');
         $out .= $this->admin_tabs('apreport');
         $out .= html_writer::end_div();
+        $url = new moodle_url($this->page->url, ['action' => 'deleteall', 'sesskey' => sesskey()]);
+        $out .= html_writer::link($url, get_string('delete:all', 'auth_antihammer'), ['class' => 'btn btn-primary']);
         ob_start();
         $table->render(25);
         $out .= ob_get_clean();

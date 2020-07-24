@@ -121,3 +121,5 @@ $string['privacy:metadata:auth_antihammer_log:data'] = 'Serialized information s
 $string['privacy:metadata:auth_antihammer_log:datecreated'] = 'Time the record was created.';
 $string['privacy:metadata:auth_antihammer'] = 'Auth method antihammer stores (temporary) information related to (hammering) login attempts for user';
 $string['privacy:metadata:auth_antihammer_log'] = 'Auth method antihammer stores historical/logging information related to (hammering) login attempts for user';
+
+$string['delete:all'] = 'Remove all records';

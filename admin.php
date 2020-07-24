@@ -75,6 +75,13 @@ switch($page) {
                 redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
                 break;
 
+            case 'deleteall':
+                require_capability('auth/antihammer:delete', context_system::instance());
+                require_sesskey();
+                $DB->delete_records('auth_antihammer');
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                break;
+
             case 'list':
             default:
                 $PAGE->set_title(get_string('title:report:hammer', 'auth_antihammer'));

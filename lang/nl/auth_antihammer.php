@@ -121,3 +121,5 @@ $string['privacy:metadata:auth_antihammer_log:data'] = 'Geserialiseerde informat
 $string['privacy:metadata:auth_antihammer_log:datecreated'] = 'Tijdstip waarop de gegevens zijn aangemaakt.';
 $string['privacy:metadata:auth_antihammer'] = 'Authenticatiemethode antihammer slaat gegevens op gerelateerd aan (hammering) login pogingen voor gebruikers';
 $string['privacy:metadata:auth_antihammer_log'] = 'Authenticatiemethode antihammer log slaat historische/log gegevens op gerelateerd aan (hammering) login pogingen voor gebruikers';
+
+$string['delete:all'] = 'Alle rijen verwijderen';

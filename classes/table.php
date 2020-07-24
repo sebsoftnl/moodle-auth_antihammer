@@ -152,7 +152,7 @@ class table extends \table_sql {
      * @param array $params
      * @throws exception
      */
-    public function set_sql($fields, $from, $where, array $params = null) {
+    public function set_sql($fields, $from, $where, array $params = []) {
         // We'll disable this method.
         throw new exception('err:sqltable:set_sql');
     }

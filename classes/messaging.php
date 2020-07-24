@@ -85,6 +85,7 @@ class messaging {
                     $message->notification = 0;
                     $message->contexturl = $contexturl->out();
                     $message->contexturlname = get_string('ap:report', 'auth_antihammer');
+                    $message->courseid = SITEID;
                 } else {
                     $message = new \stdClass();
                     $message->component = 'auth_antihammer';

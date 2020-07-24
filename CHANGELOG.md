@@ -1,3 +1,12 @@
+Version 3.5.2 (build 2020070100)
+* Added "courseid" to message(s) to prevent debugging output.
+* Added option to remove all "current block records"
+* Renamed .txt files to .md (readme, changelog)
+* Added LICENSE.md
+* Verified working on Moodle 3.9
+
+----------
+
 Version 3.5.1 (build 2018050301)
 * Updated privacy provider.
 ----------
