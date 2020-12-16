@@ -63,6 +63,13 @@ if ($ADMIN->fulltree) {
             get_string('autoclear_ipblock', 'auth_antihammer'), '', 1, 1, 0));
     $settings->add(new admin_setting_configduration('auth_antihammer/autoclear_ipblock_after',
             get_string('autoclear_ipblock_after', 'auth_antihammer'), '', 86400, 86400));
+    $numentries = isset($config->ipwhitelist) ? count(explode("\n", $config->ipwhitelist)) : 0;
+    $settings->add(new admin_setting_configtextarea('auth_antihammer/ipwhitelist',
+            get_string('ipwhitelist', 'auth_antihammer'),
+            get_string('ipwhitelist_desc', 'auth_antihammer'),
+            '',
+            PARAM_RAW,
+            60, max(10, $numentries + 3)));
     // User blocking.
     $settings->add(new admin_setting_heading('auth_antihammer_usersettings',
             get_string('auth_antihammer_usersettings', 'auth_antihammer'),
@@ -108,6 +115,15 @@ if ($ADMIN->fulltree) {
             get_string('addcfgipblock', 'auth_antihammer'),
             get_string('addcfgipblock_desc', 'auth_antihammer', $blockipsettings->out()),
             0));
+
+    $settings->add(new admin_setting_heading('auth_antihammer_repeatoffendersettings',
+            get_string('auth_antihammer_repeatoffendersettings', 'auth_antihammer'),
+            get_string('auth_antihammer_repeatoffendersettings_desc', 'auth_antihammer')));
+    $settings->add(new admin_setting_configcheckbox('auth_antihammer/enablerepeatoffenders',
+            get_string('enablerepeatoffenders', 'auth_antihammer'),
+            get_string('enablerepeatoffenders_desc', 'auth_antihammer'),
+            0));
+
 }
 
 if ($hassiteconfig) {
@@ -120,4 +136,6 @@ if ($hassiteconfig) {
             new moodle_url('/auth/antihammer/admin.php', array('page' => 'apreport'))));
     $ADMIN->add('apantihammer', new admin_externalpage('aplog', get_string('ap:log', 'auth_antihammer'),
             new moodle_url('/auth/antihammer/admin.php', array('page' => 'aplog'))));
+    $ADMIN->add('apantihammer', new admin_externalpage('roreport', get_string('ap:ro', 'auth_antihammer'),
+            new moodle_url('/auth/antihammer/admin.php', array('page' => 'rereport'))));
 }

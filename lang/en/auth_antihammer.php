@@ -123,3 +123,33 @@ $string['privacy:metadata:auth_antihammer'] = 'Auth method antihammer stores (te
 $string['privacy:metadata:auth_antihammer_log'] = 'Auth method antihammer stores historical/logging information related to (hammering) login attempts for user';
 
 $string['delete:all'] = 'Remove all records';
+$string['plugin:notenabled'] = 'Antihammering plugin is installed but not yet enabled.<br/>
+This means none of the functionality of this plugin works at the moment.<br/>
+If you want to make use of the blocking capabilities of this plugin, please enable the plugin in the list of authentication plugins in the site administration.
+';
+$string['action:delete:ipblock'] = 'Remove IP block';
+$string['lookup:whatismyip'] = 'Lookup on whatismyipaddress.com';
+$string['lookup:iplookup'] = 'IP Lookup (moodle)';
+$string['auth_antihammer_repeatoffendersettings'] = 'Repeat offender settings';
+$string['auth_antihammer_repeatoffendersettings_desc'] = 'Please note the repeat offender settings is in BETA status.<br/>
+When used, this attempts to use a method similar to the OSSEC feature.
+';
+$string['enablerepeatoffenders'] = 'Enable repeat offenders feature? [BETA]';
+$string['enablerepeatoffenders_desc'] = 'This turns the repeat offenders functionality on or off';
+$string['title:report:repeatoffenders'] = 'Antihammer repeat offenders';
+$string['ap:ro'] = 'Repeat offenders';
+$string['action:delete:roitem'] = 'Remove this repeat offenders IP address item';
+$string['thead:blockcounter'] = 'Blocked counter';
+$string['thead:nextblockduration'] = 'Duration if blocked';
+$string['plugin:getremoteaddrconf:notification'] = 'The core configuration indicating how remote IP addresses are detected might be problematic.<br/>
+The HTTP Header configuration is lacking HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR or both.<br/>
+If your server is behind a reverse proxy this might cause the wrong IP address to be logged.<br/>
+To change these settings, please adjust the settings for "getremoteaddrconfig" in the <a href="/admin/settings.php?section=http" target="_new">HTTP settings</a>';
+$string['ipwhitelist'] = 'IP Whitelist';
+$string['ipwhitelist_desc'] = 'You can configure a list of IP addresses that will <i>not</i> be blocked ever.<br/>
+Enter each IP address on a <i>new line</i>.<br/>
+These IP addresses will be excluded from antihammer blocking.<br/>For now, we do <i>not</i> support wildcards.<br/>
+This is specifically handy in the case where internal networks are in play, for example in schools, universities, etc.
+';
+$string['ip:whitelist'] = 'Whitelist IP address';
+$string['thead:whitelisted'] = 'Whitelisted?';

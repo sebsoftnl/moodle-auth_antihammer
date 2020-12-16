@@ -78,11 +78,29 @@ class table extends \table_sql {
      */
     protected $strdeletehammer;
     /**
+     * Localised string for 'delete IP' message
+     *
+     * @var string
+     */
+    protected $strdeleteipblock;
+    /**
      * Localised string to indicate IP type blocking
      *
      * @var string
      */
     protected $strtypeip;
+    /**
+     * Localised string to indicate IP lookup on whatismyipaddress.com
+     *
+     * @var string
+     */
+    protected $strwhatismyip;
+    /**
+     * Localised string to indicate IP lookup from Moodle's iplookup page
+     *
+     * @var string
+     */
+    protected $striplookup;
     /**
      * Localised string to indicate user type blocking
      *
@@ -96,6 +114,12 @@ class table extends \table_sql {
      */
     protected $strtypeinfo;
     /**
+     * Localised string to indicate adding to whitelist
+     *
+     * @var string
+     */
+    protected $strwhitelist;
+    /**
      * Localised string to indicate YES
      *
      * @var string
@@ -107,6 +131,12 @@ class table extends \table_sql {
      * @var string
      */
     protected $strno;
+    /**
+     * Plugin configuration
+     *
+     * @var stdClass
+     */
+    protected $config;
 
     /**
      * Create a new instance of the table
@@ -121,12 +151,19 @@ class table extends \table_sql {
         // Load localised strings to save CPU for lookups.
         $this->strdeletelog = get_string('action:delete:logitem', 'auth_antihammer');
         $this->strdeletehammer = get_string('action:delete:hammeritem', 'auth_antihammer');
+        $this->strdeleteipblock = get_string('action:delete:ipblock', 'auth_antihammer');
         $this->strdetailslog = get_string('action:view:logitem', 'auth_antihammer');
         $this->strtypeip = get_string('type:ip', 'auth_antihammer');
+        $this->strwhitelist = get_string('ip:whitelist', 'auth_antihammer');
+        $this->strwhatismyip = get_string('lookup:whatismyip', 'auth_antihammer');
+        $this->striplookup = get_string('lookup:iplookup', 'auth_antihammer');
         $this->strtypeuser = get_string('type:user', 'auth_antihammer');
         $this->strtypeinfo = get_string('type:info', 'auth_antihammer');
         $this->stryes = get_string('yes');
         $this->strno = get_string('no');
+        $this->config = get_config('auth_antihammer');
+        $this->config->ipwhitelist = isset($this->config->ipwhitelist) ?
+                array_unique(array_map('trim', explode("\n", $this->config->ipwhitelist))) : [];
     }
 
     /**
@@ -251,6 +288,49 @@ class table extends \table_sql {
     }
 
     /**
+     * Render visual representation of the 'ip' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string type string
+     */
+    public function col_ip($row) {
+        global $CFG, $OUTPUT;
+        $actions = [];
+        switch ($this->displaytype) {
+            case self::LOG:
+                break;
+            default:
+                $actions[] = $OUTPUT->action_icon(
+                        new \moodle_url($this->baseurl,
+                                ['action' => 'deleteipblock', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
+                        new \pix_icon('i/delete', $this->strdeleteipblock),
+                        null,
+                        ['alt' => $this->strdeleteipblock]);
+                $actions[] = $OUTPUT->action_icon(
+                        new \moodle_url($CFG->wwwroot . '/iplookup/index.php', ['ip' => $row->ip]),
+                        new \pix_icon('i/location', $this->striplookup),
+                        null,
+                        ['alt' => $this->striplookup, 'target' => '_new']);
+                $actions[] = $OUTPUT->action_icon(
+                        new \moodle_url('https://whatismyipaddress.com/ip/'.$row->ip),
+                        new \pix_icon('i/publish', $this->strwhatismyip),
+                        null,
+                        ['alt' => $this->strwhatismyip, 'target' => '_new']);
+                if (!in_array($row->ip, $this->config->ipwhitelist)) {
+                    $actions[] = $OUTPUT->action_icon(
+                            new \moodle_url($this->baseurl,
+                                    ['action' => 'whitelist', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
+                            new \pix_icon('t/check', $this->strwhitelist),
+                            null,
+                            ['alt' => $this->strwhitelist]);
+                }
+                break;
+        }
+
+        return $row->ip . implode('', $actions);
+    }
+
+    /**
      * Render visual representation of the 'blocked' column for use in the table
      *
      * @param \stdClass $row
@@ -312,51 +392,30 @@ class table extends \table_sql {
      * @return string actions
      */
     public function col_action($row) {
-        $actions = array();
-        $actions[] = $this->get_action($row, 'delete', true);
+        global $OUTPUT;
+        $actions = [];
         switch ($this->displaytype) {
             case self::LOG:
-                $actions[] = $this->get_action($row, 'details');
+                $actions[] = $OUTPUT->action_icon(
+                        new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
+                        new \pix_icon('i/delete', $this->strdeletelog),
+                        null,
+                        ['alt' => $this->strdeletelog]);
+                $actions[] = $OUTPUT->action_icon(
+                        new \moodle_url($this->baseurl, ['action' => 'details', 'id' => $row->id, 'sesskey' => sesskey()]),
+                        new \pix_icon('i/preview', $this->strdetailslog),
+                        null,
+                        ['alt' => $this->strdetailslog]);
                 break;
             default:
+                $actions[] = $OUTPUT->action_icon(
+                        new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
+                        new \pix_icon('i/delete', $this->strdeletehammer),
+                        null,
+                        ['alt' => $this->strdeletehammer]);
                 break;
         }
-        return implode(' ', $actions);
-    }
-
-    /**
-     * Return the image tag representing an action image
-     *
-     * @param string $action
-     * @return string HTML image tag
-     */
-    protected function get_action_image($action) {
-        global $OUTPUT;
-        $actionstr = 'str' . $action . $this->displaytype;
-        return '<img src="' . $OUTPUT->image_url($action, 'auth_antihammer') .
-                '" title="' . $this->{$actionstr} . '"/>';
-    }
-
-    /**
-     * Return a string containing the link to an action
-     *
-     * @param \stdClass $row
-     * @param string $action
-     * @param bool $confirm whether or not to render a javascript confirm box
-     * @return string link representing the action with an image
-     */
-    protected function get_action($row, $action, $confirm = false) {
-        $actionstr = 'str' . $action . $this->displaytype;
-        $onclick = '';
-        if ($confirm) {
-            $onclick = 'onclick="return confirm(\'' .
-                    get_string('action:confirm-' . $action . '-' . $this->displaytype, 'auth_antihammer') .
-                    '\');" ';
-        }
-        return '<a ' . $onclick . 'href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'id' => $row->id, 'sesskey' => sesskey())) .
-                '" alt="' . $this->{$actionstr} .
-                '">' . $this->get_action_image($action) . '</a>';
+        return implode('', $actions);
     }
 
 }

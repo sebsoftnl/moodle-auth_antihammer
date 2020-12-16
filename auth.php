@@ -43,19 +43,21 @@ require_once($CFG->libdir . '/authlib.php');
 class auth_plugin_antihammer extends auth_plugin_base {
 
     /**
-     *
      * @var string
      */
     protected $currentip;
 
     /**
-     *
      * @var auth_antihammer\antihammer
      */
     protected $iphammer;
 
     /**
-     *
+     * @var auth_antihammer\repeatoffender
+     */
+    protected $repeatoffender;
+
+    /**
      * @var auth_antihammer\antihammer
      */
     protected $userhammer;
@@ -155,6 +157,11 @@ class auth_plugin_antihammer extends auth_plugin_base {
         \auth_antihammer\antihammer::clean_ip_hammering($this->config);
         \auth_antihammer\antihammer::clean_user_hammering($this->config);
 
+        // If IP is in whitelist, don't do anything.
+        if (auth_antihammer\util::in_whitelist($this->currentip)) {
+            return;
+        }
+
         // Pre load IP hammer. If we're already blocked, redirect.
         $this->load_ip_hammer();
         if ($this->iphammer->blocked) {
@@ -246,6 +253,10 @@ class auth_plugin_antihammer extends auth_plugin_base {
         $params['type'] = \auth_antihammer\antihammer::TYPE_IP;
         $params['ip'] = $this->currentip;
         $this->iphammer = \auth_antihammer\antihammer::find($params);
+        // Add to repeat offenders if enabled.
+        if ($this->config->enablerepeatoffenders) {
+            $this->repeatoffender = \auth_antihammer\repeatoffender::append_to_ip_record($this->currentip);
+        }
     }
 
     /**
@@ -259,6 +270,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
         if (!(bool) $this->config->blockip) {
             return false;
         }
+
         // Check if already blocked.
         if ($this->iphammer->blocked) {
             throw new \auth_antihammer\exception('err:blocked:ip', '', $this->iphammer);
@@ -268,7 +280,13 @@ class auth_plugin_antihammer extends auth_plugin_base {
         $this->iphammer->count++;
 
         // Now check if to be blocked.
-        $timecheck = $this->iphammer->firstattempt + $this->config->ip_attemptcounter;
+        if ($this->config->enablerepeatoffenders) {
+            $blockduration = $this->repeatoffender->get_block_duration($this->config->ip_attemptcounter);
+        } else {
+            $blockduration = $this->config->ip_attemptcounter;
+        }
+
+        $timecheck = $this->iphammer->firstattempt + $blockduration;
         if ((time() <= $timecheck) && ($this->iphammer->count >= $this->config->ip_attempts)) {
             // Set blocked.
             $this->iphammer->blocked = 1;
@@ -279,6 +297,12 @@ class auth_plugin_antihammer extends auth_plugin_base {
         }
         $this->iphammer->save();
         if ($this->iphammer->blocked) {
+            // Add to repeat offender?
+            if ($this->config->enablerepeatoffenders) {
+                $this->repeatoffender->blockcounter++;
+                $this->repeatoffender->save();
+            }
+
             // Add to globals?
             if ((bool)$this->config->addcfgipblock) {
                 auth_antihammer\antihammer::add_blocked_ip_to_global($this->iphammer->ip);

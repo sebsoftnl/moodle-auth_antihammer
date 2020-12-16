@@ -27,7 +27,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace auth_antihammer\output;
+
 defined('MOODLE_INTERNAL') || die;
+
+use plugin_renderer_base;
+use html_writer;
+use moodle_url;
 
 /**
  * auth_antihammer_renderer
@@ -38,7 +44,7 @@ defined('MOODLE_INTERNAL') || die;
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class auth_antihammer_renderer extends plugin_renderer_base {
+class renderer extends plugin_renderer_base {
 
     /**
      * Display logs page for administrators
@@ -51,6 +57,26 @@ class auth_antihammer_renderer extends plugin_renderer_base {
         $out .= html_writer::start_div('auth-antihammer-container');
         $out .= html_writer::start_div('auth-antihammer-tabs');
         $out .= $this->admin_tabs('aplog');
+        $out .= html_writer::end_div();
+        ob_start();
+        $table->render(25);
+        $out .= ob_get_clean();
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
+        return $out;
+    }
+
+    /**
+     * Display logs page for administrators
+     */
+    public function admin_page_report_repeatoffenders() {
+        $table = new \auth_antihammer\rotable();
+        $table->baseurl = $this->page->url;
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('auth-antihammer-container');
+        $out .= html_writer::start_div('auth-antihammer-tabs');
+        $out .= $this->admin_tabs('roreport');
         $out .= html_writer::end_div();
         ob_start();
         $table->render(25);
@@ -124,20 +150,26 @@ class auth_antihammer_renderer extends plugin_renderer_base {
      * @param array $params any paramaters needed for the base url
      */
     protected function admin_tabs($selected, $params = array()) {
+        $config = get_config('auth_antihammer');
         $tabs = array();
         $tabs[] = $this->create_pictab('apreport', 'hammer', 'auth_antihammer',
                 new \moodle_url('/auth/antihammer/admin.php', array_merge($params, array('page' => 'apreport'))),
                 get_string('ap:report', 'auth_antihammer'));
-        $tabs[] = $this->create_pictab('aplog', 'logs', 'auth_antihammer',
+        $tabs[] = $this->create_pictab('aplog', 'i/report', 'moodle',
                 new \moodle_url('/auth/antihammer/admin.php', array_merge($params, array('page' => 'aplog'))),
                 get_string('ap:log', 'auth_antihammer'));
+        if ($config->enablerepeatoffenders) {
+            $tabs[] = $this->create_pictab('roreport', 'i/report', 'moodle',
+                    new \moodle_url('/auth/antihammer/admin.php', array_merge($params, array('page' => 'roreport'))),
+                    get_string('ap:ro', 'auth_antihammer'));
+        }
         if ($selected === 'logdetails') {
             $tabs[] = $this->create_pictab('logdetails', 'details', 'auth_antihammer',
                     new \moodle_url('/auth/antihammer/admin.php',
                     array_merge($params, array('page' => 'aplog', 'action' => 'details'))),
                     get_string('ap:logdetails', 'auth_antihammer'));
         }
-        $tabs[] = $this->create_pictab('ahsettings', 'settings', 'auth_antihammer',
+        $tabs[] = $this->create_pictab('ahsettings', 'i/settings', 'moodle',
                 new \moodle_url('/admin/settings.php', array('section' => 'authsettingantihammer')),
                 get_string('pluginname', 'auth_antihammer'));
         return $this->tabtree($tabs, $selected);

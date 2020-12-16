@@ -123,3 +123,27 @@ $string['privacy:metadata:auth_antihammer'] = 'Authenticatiemethode antihammer s
 $string['privacy:metadata:auth_antihammer_log'] = 'Authenticatiemethode antihammer log slaat historische/log gegevens op gerelateerd aan (hammering) login pogingen voor gebruikers';
 
 $string['delete:all'] = 'Alle rijen verwijderen';
+$string['plugin:notenabled'] = 'Antihammering plugin is geinstalleerd maar nog niet geactiveerd.<br/>
+Dit betekent dat deze plugin op dit moment niet werkt.<br/>
+Indien je gebruik wenst te maken van de functionaliteit van deze plugin, schakel deze dan in via de lijst met authenticatieplugins via sitebeheer.
+';
+$string['action:delete:ipblock'] = 'IP blokkade verwijderen';
+$string['lookup:whatismyip'] = 'Opzoeken op whatismyipaddress.com';
+$string['lookup:iplookup'] = 'IP Lookup (moodle)';
+$string['title:report:repeatoffenders'] = 'Antihammer recidivisten';
+$string['ap:ro'] = 'Recidivisten';
+$string['action:delete:roitem'] = 'Verwijder dit recidivisten IP adres item';
+$string['thead:blockcounter'] = 'Blokkadeteller';
+$string['thead:nextblockduration'] = 'Volgende blokkadeduur';
+$string['plugin:getremoteaddrconf:notification'] = 'De core installinegen die bepalen hoe een extern IP adres wordt bepaald kan problemen opleveren.<br/>
+De HTTP Header configuratie kijkt niet naar HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR of beiden.<br/>
+Indien je server achter een reverse proxy staat zou dit kunnen betekenen dat het verkeerde IP adres wordt gelogd.<br/>
+Om dit op te lossen kun je de instelling aanpassen in voor "getremoteaddrconfig" in de <a href="/admin/settings.php?section=http" target="_new">HTTP instellingen</a>';
+$string['ipwhitelist'] = 'IP Whitelist';
+$string['ipwhitelist_desc'] = 'Je kunt hier een whitelist voor IP addressen opgeven die <i>niet</i> geblokkeerd worden.<br/>
+Geef elk IP adres in op een <i>nieuwe regel</i>.<br/>
+Deze IP adressen worden niet meegenomen in de blokkadelijsten van antihammer.<br/>We ondersteunen voor nu nog <i>geen</i> wildcards.<br/>
+Dit is met name handig als er via een intern netwerk met Moodle gewerkt wordt waar vele computers hetzelfde IP adres gebruiken, bijvoorbeeld op scholen en universiteiten.
+';
+$string['ip:whitelist'] = 'IP adres toevoegen aan whitelist';
+$string['thead:whitelisted'] = 'Staat op whitelist?';

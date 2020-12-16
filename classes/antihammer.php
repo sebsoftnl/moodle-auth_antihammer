@@ -315,7 +315,7 @@ class antihammer {
      * @return \self
      */
     static public final function create_from_object($obj) {
-        $self = new self();
+        $self = new static();
         $self->set_from_object($obj);
         return $self;
     }

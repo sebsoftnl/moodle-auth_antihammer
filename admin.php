@@ -41,6 +41,9 @@ $PAGE->set_url($pageurl);
 $PAGE->set_heading($SITE->fullname);
 
 $renderer = $PAGE->get_renderer('auth_antihammer');
+
+auth_antihammer\util::check_notifications();
+
 switch($page) {
     case 'aplog':
         switch ($action) {
@@ -82,10 +85,52 @@ switch($page) {
                 redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
                 break;
 
+            case 'deleteipblock':
+                require_capability('auth/antihammer:delete', context_system::instance());
+                require_sesskey();
+                $ip = required_param('ip', PARAM_BASE64);
+                $DB->delete_records('auth_antihammer', ['ip' => base64_decode($ip)]);
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                break;
+
+            case 'whitelist':
+                require_capability('auth/antihammer:administration', context_system::instance());
+                require_sesskey();
+                $ip = required_param('ip', PARAM_BASE64);
+                auth_antihammer\util::add_to_whitelist(base64_decode($ip));
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                break;
+
             case 'list':
             default:
                 $PAGE->set_title(get_string('title:report:hammer', 'auth_antihammer'));
                 echo $renderer->admin_page_report_overview();
+                break;
+        }
+        break;
+
+    case 'roreport':
+        switch ($action) {
+            case 'delete':
+                require_capability('auth/antihammer:delete', context_system::instance());
+                require_sesskey();
+                $id = required_param('id', PARAM_INT);
+                $DB->delete_records('auth_antihammer_ro', array('id' => $id));
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                break;
+
+            case 'whitelist':
+                require_capability('auth/antihammer:administration', context_system::instance());
+                require_sesskey();
+                $ip = required_param('ip', PARAM_BASE64);
+                auth_antihammer\util::add_to_whitelist(base64_decode($ip));
+                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                break;
+
+            case 'list':
+            default:
+                $PAGE->set_title(get_string('title:report:repeatoffenders', 'auth_antihammer'));
+                echo $renderer->admin_page_report_repeatoffenders();
                 break;
         }
         break;
