@@ -135,7 +135,7 @@ $string['ap:ro'] = 'Recidivisten';
 $string['action:delete:roitem'] = 'Verwijder dit recidivisten IP adres item';
 $string['thead:blockcounter'] = 'Blokkadeteller';
 $string['thead:nextblockduration'] = 'Volgende blokkadeduur';
-$string['plugin:getremoteaddrconf:notification'] = 'De core installinegen die bepalen hoe een extern IP adres wordt bepaald kan problemen opleveren.<br/>
+$string['plugin:getremoteaddrconf:notification'] = 'De core instellingen die bepalen hoe een extern IP adres wordt bepaald kan problemen opleveren.<br/>
 De HTTP Header configuratie kijkt niet naar HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR of beiden.<br/>
 Indien je server achter een reverse proxy staat zou dit kunnen betekenen dat het verkeerde IP adres wordt gelogd.<br/>
 Om dit op te lossen kun je de instelling aanpassen in voor "getremoteaddrconfig" in de <a href="/admin/settings.php?section=http" target="_new">HTTP instellingen</a>';
