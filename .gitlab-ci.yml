@@ -46,7 +46,7 @@ before_script:
   image: moodlehq/moodle-php-apache:7.4
   script:
     - moodle-plugin-ci phplint
-    - moodle-plugin-ci phpcpd
+    - moodle-plugin-ci phpcpd || true
     - moodle-plugin-ci phpmd
     - moodle-plugin-ci codechecker
     - moodle-plugin-ci validate
@@ -56,6 +56,16 @@ before_script:
     - moodle-plugin-ci phpdoc || true
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat
+
+Moodle 4.0:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "master"
+
+Moodle 3.11:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_311_STABLE"
 
 Moodle 3.10:
   <<: *job_definition
@@ -77,12 +87,3 @@ Moodle 3.7:
   variables:
     MOODLE_BRANCH: "MOODLE_37_STABLE" 
 
-Moodle 3.6:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_36_STABLE" 
-
-Moodle 3.5:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_35_STABLE" 
