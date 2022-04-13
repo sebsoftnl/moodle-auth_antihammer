@@ -192,7 +192,8 @@ class rotable extends \table_sql {
                 ['alt' => $this->strwhatismyip, 'target' => '_new']);
         if (!in_array($row->ip, $this->config->ipwhitelist)) {
             $actions[] = $OUTPUT->action_icon(
-                    new \moodle_url($this->baseurl, ['action' => 'whitelist', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
+                    new \moodle_url($this->baseurl, ['action' => 'whitelist',
+                            'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
                     new \pix_icon('t/check', $this->strwhitelist),
                     null,
                     ['alt' => $this->strwhitelist]);

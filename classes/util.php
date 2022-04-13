@@ -76,9 +76,10 @@ class util {
     }
 
     /**
-     * Add given IP address to the whitelist.
+     * Add or remove given IP address to the whitelist.
      *
      * @param string $ip
+     * @param bool $remove
      */
     public static function add_to_whitelist($ip, $remove = false) {
         global $DB;

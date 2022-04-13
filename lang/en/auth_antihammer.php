@@ -153,3 +153,6 @@ This is specifically handy in the case where internal networks are in play, for 
 ';
 $string['ip:whitelist'] = 'Whitelist IP address';
 $string['thead:whitelisted'] = 'Whitelisted?';
+$string['warn:moodlelockoutactive'] = 'Moodle <a href="{$a}">account lockout</a> as well as antihammer\'s user blocking is active.<br/>
+This can cause unintended side-effects. Please consider disabling one.';
+$string['antihammer:notifyblocking'] = 'Be notified about antihammer account blocking.';

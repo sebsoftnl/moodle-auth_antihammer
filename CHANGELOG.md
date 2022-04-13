@@ -1,3 +1,13 @@
+Version 3.6.2 (build 2020121602)
+* Fixed 2 coding standards issues.
+# Resolved #1 (missing notifyblocking string).
+# Validated working for Moodle 4.0
+
+----------
+Version 3.6.1 (build 2020121601)
+* Added warning message for when account lockout in Moodle and antihammer are both enabled.
+
+----------
 Version 3.6.0 (build 2020121600)
 * Added more actions in tables, especially related to looking up IP addresses.
 * Added option to remove a complete IP block.

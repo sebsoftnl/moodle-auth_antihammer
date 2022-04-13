@@ -58,6 +58,7 @@ class renderer extends plugin_renderer_base {
         $out .= html_writer::start_div('auth-antihammer-tabs');
         $out .= $this->admin_tabs('aplog');
         $out .= html_writer::end_div();
+        $out .= $this->get_lockoutthreshold_warning();
         ob_start();
         $table->render(25);
         $out .= ob_get_clean();
@@ -78,6 +79,7 @@ class renderer extends plugin_renderer_base {
         $out .= html_writer::start_div('auth-antihammer-tabs');
         $out .= $this->admin_tabs('roreport');
         $out .= html_writer::end_div();
+        $out .= $this->get_lockoutthreshold_warning();
         ob_start();
         $table->render(25);
         $out .= ob_get_clean();
@@ -99,6 +101,7 @@ class renderer extends plugin_renderer_base {
         $out .= html_writer::start_div('auth-antihammer-tabs');
         $out .= $this->admin_tabs('logdetails');
         $out .= html_writer::end_div();
+        $out .= $this->get_lockoutthreshold_warning();
         $record->data = unserialize($record->data);
         $datefields = array('datecreated', 'blocktime', 'firstattempt');
         $out .= $this->obj_to_table($record, 1, 5, array('id'), $datefields);
@@ -119,6 +122,7 @@ class renderer extends plugin_renderer_base {
         $out .= html_writer::start_div('auth-antihammer-tabs');
         $out .= $this->admin_tabs('apreport');
         $out .= html_writer::end_div();
+        $out .= $this->get_lockoutthreshold_warning();
         $url = new moodle_url($this->page->url, ['action' => 'deleteall', 'sesskey' => sesskey()]);
         $out .= html_writer::link($url, get_string('delete:all', 'auth_antihammer'), ['class' => 'btn btn-primary']);
         ob_start();
@@ -237,6 +241,20 @@ class renderer extends plugin_renderer_base {
         }
         $str .= '</table>';
         return $str;
+    }
+
+    /**
+     * Add waring if Moodle's core functionality and our own user lockout are both set.
+     *
+     * @return string
+     */
+    public function get_lockoutthreshold_warning() {
+        global $CFG;
+        if (((int)$CFG->lockoutthreshold > 0) && (bool)\auth_antihammer\config::get('blockusername')) {
+            $link = (new moodle_url('/admin/settings.php', ['section' => 'sitepolicies']))->out(false);
+            return \html_writer::div(get_string('warn:moodlelockoutactive', 'auth_antihammer', $link), 'alert alert-warning');
+        }
+        return '';
     }
 
 }

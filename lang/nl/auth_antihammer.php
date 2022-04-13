@@ -147,3 +147,6 @@ Dit is met name handig als er via een intern netwerk met Moodle gewerkt wordt wa
 ';
 $string['ip:whitelist'] = 'IP adres toevoegen aan whitelist';
 $string['thead:whitelisted'] = 'Staat op whitelist?';
+$string['warn:moodlelockoutactive'] = 'Moodle <a href="{$a}">account lockout</a> is actief naast antihammer\'s instelling.<br/>
+Dit kan ongewenste neveneffecten hebben (zoals full lockout). Overweeg aub een van beiden te deactiveren.';
+$string['antihammer:notifyblocking'] = 'Notificaties ontvangen ten behoeve van account blokkades.';
