@@ -1,3 +1,7 @@
+Version 3.6.3 (build 2020121603)
+* Runner now working more correct again; fixing heaps of coding standards issues.
+
+----------
 Version 3.6.2 (build 2020121602)
 * Fixed 2 coding standards issues.
 # Resolved #1 (missing notifyblocking string).

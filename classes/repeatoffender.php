@@ -240,7 +240,7 @@ class repeatoffender {
      * @param \stdClass $obj
      * @return \self
      */
-    static public final function create_from_object($obj) {
+    final public static function create_from_object($obj) {
         $self = new static();
         $self->set_from_object($obj);
         return $self;
@@ -252,7 +252,7 @@ class repeatoffender {
      * @param string $ip
      * @return \auth_hammer\repeatoffender
      */
-    static public final function get_ip_record($ip) {
+    final public static function get_ip_record($ip) {
         global $DB;
         $record = $DB->get_record('auth_antihammer_ro', ['ip' => $ip]);
         if ($record !== false) {
@@ -268,7 +268,7 @@ class repeatoffender {
      * @param string $ip
      * @return \auth_hammer\repeatoffender
      */
-    static public final function append_to_ip_record($ip) {
+    final public static function append_to_ip_record($ip) {
         $record = static::get_ip_record($ip);
         $record->counter++;
         $record->save();

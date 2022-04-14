@@ -297,7 +297,7 @@ class logmessage {
      * @param \stdClass $obj
      * @return \self
      */
-    public static final function create_from_object($obj) {
+    final public static function create_from_object($obj) {
         $self = new self();
         $self->set_from_db($obj);
         return $self;
@@ -315,7 +315,7 @@ class logmessage {
      *
      * @return int insert ID
      */
-    public static final function log_message($type, $msg, $module, $action, $data = null, $code = 0) {
+    final public static function log_message($type, $msg, $module, $action, $data = null, $code = 0) {
         global $USER, $DB;
 
         $rmsg = new static();
@@ -342,7 +342,7 @@ class logmessage {
      *
      * @return int insert ID
      */
-    public static final function log_info($msg, $module, $action, $data = null, $code = 0) {
+    final public static function log_info($msg, $module, $action, $data = null, $code = 0) {
         return self::log_message('info', $msg, $module, $action, $data, $code);
     }
 
@@ -357,7 +357,7 @@ class logmessage {
      *
      * @return int insert ID
      */
-    public static final function log_warning($msg, $module, $action, $data = null, $code = 0) {
+    final public static function log_warning($msg, $module, $action, $data = null, $code = 0) {
         return self::log_message('warning', $msg, $module, $action, $data, $code);
     }
 
@@ -372,7 +372,7 @@ class logmessage {
      *
      * @return int insert ID
      */
-    public static final function log_error($msg, $module, $action, $data = null, $code = 0) {
+    final public static function log_error($msg, $module, $action, $data = null, $code = 0) {
         return self::log_message('error', $msg, $module, $action, $data, $code);
     }
 
@@ -382,7 +382,7 @@ class logmessage {
      * @param int $id primary key value
      * @return \auth_hammer\logmessage
      */
-    public static final function get_by_id($id) {
+    final public static function get_by_id($id) {
         global $DB;
 
         $data = $DB->get_record('auth_antihammer_log', array('id' => $id));
@@ -401,7 +401,7 @@ class logmessage {
      * @param int $limit
      * @return array list of \auth_hammer\logmessage
      */
-    static public final function find_all($params, $start, $limit) {
+    final public static function find_all($params, $start, $limit) {
         global $DB;
         $sort = '';
         $fields = '*';

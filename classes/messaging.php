@@ -48,7 +48,7 @@ class messaging {
      * @param \stdClass $a
      * @param \stdClass $config
      */
-    static public function message_notifyblocking($a, $config = null) {
+    public static function message_notifyblocking($a, $config = null) {
         if (empty($config)) {
             $config = get_config('auth_antihammer');
         }

@@ -314,7 +314,7 @@ class antihammer {
      * @param \stdClass $obj
      * @return \self
      */
-    static public final function create_from_object($obj) {
+    final public static function create_from_object($obj) {
         $self = new static();
         $self->set_from_object($obj);
         return $self;
@@ -327,7 +327,7 @@ class antihammer {
      * @param array $params
      * @return \auth_hammer\hammer
      */
-    static public final function find($params) {
+    final public static function find($params) {
         global $DB;
         $sql = "SELECT * FROM {auth_antihammer} WHERE ";
         $conditions = array();
@@ -354,7 +354,7 @@ class antihammer {
      * @param int $limit
      * @return array
      */
-    static public final function find_all($params, $start, $limit) {
+    final public static function find_all($params, $start, $limit) {
         global $DB;
         $sort = '';
         $fields = '*';
@@ -368,7 +368,7 @@ class antihammer {
      *
      * @return void
      */
-    static public function clean_ip_hammering($config = null) {
+    public static function clean_ip_hammering($config = null) {
         global $DB;
         if ($config === null) {
             $config = get_config('auth_antihammer');
@@ -395,7 +395,7 @@ class antihammer {
      *
      * @return void
      */
-    static public function clean_user_hammering($config = null) {
+    public static function clean_user_hammering($config = null) {
         global $DB;
         if ($config === null) {
             $config = get_config('auth_antihammer');
@@ -427,7 +427,7 @@ class antihammer {
      *
      * @param string $username
      */
-    static public function clean_for_user($username) {
+    public static function clean_for_user($username) {
         global $DB;
         $params = array($username);
         $DB->delete_records_select('auth_antihammer', 'username = ', $params);
@@ -438,7 +438,7 @@ class antihammer {
      *
      * @param string $userid
      */
-    static public function clean_for_userid($userid) {
+    public static function clean_for_userid($userid) {
         global $DB;
         $params = array($userid);
         $DB->delete_records_select('auth_antihammer', 'userid = ', $params);
@@ -449,7 +449,7 @@ class antihammer {
      *
      * @param string $ipaddress
      */
-    static public function add_blocked_ip_to_global($ipaddress) {
+    public static function add_blocked_ip_to_global($ipaddress) {
         $addresses = explode("\n", get_config('core', 'blockedip'));
         $addresses[] = $ipaddress;
         set_config('blockedip', implode("\n", $addresses));
@@ -460,7 +460,7 @@ class antihammer {
      *
      * @param string $ipaddress
      */
-    static public function remove_blocked_ip_from_global($ipaddress) {
+    public static function remove_blocked_ip_from_global($ipaddress) {
         $addresses = explode("\n", get_config('core', 'blockedip'));
         $idx = array_search($ipaddress, $addresses);
         if ($idx !== false) {

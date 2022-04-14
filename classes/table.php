@@ -171,7 +171,7 @@ class table extends \table_sql {
      *
      * @return array list of view types
      */
-    static public function get_viewtypes() {
+    public static function get_viewtypes() {
         return array(
             self::HAMMER,
             self::LOG,
