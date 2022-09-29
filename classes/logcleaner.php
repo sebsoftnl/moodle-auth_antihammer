@@ -29,8 +29,6 @@
 
 namespace auth_antihammer;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * auth_antihammer\logcleaner
  *
