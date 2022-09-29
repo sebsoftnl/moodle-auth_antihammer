@@ -29,7 +29,7 @@
 
 namespace auth_antihammer;
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') or die();
 
 require_once($CFG->libdir . '/tablelib.php');
 

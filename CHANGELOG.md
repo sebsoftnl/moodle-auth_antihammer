@@ -1,3 +1,9 @@
+Version 3.7.0 (build 2022090100)
+* Removed all MOODLE_INTERNAL checks from singular classes as per MDLSITE-5967.
+* Fix several CI issues
+* Minimum required Moodle version: 3.10
+
+----------
 Version 3.6.3 (build 2020121603)
 * Runner now working more correct again; fixing heaps of coding standards issues.
 
