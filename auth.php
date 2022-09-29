@@ -26,10 +26,7 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-if (!defined('MOODLE_INTERNAL')) {
-    // It must be included from a Moodle page.
-    die('Direct access to this script is forbidden.');
-}
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/authlib.php');
 
@@ -149,9 +146,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
      *
      */
     public function loginpage_hook() {
-        global $frm, $user;
-        global $CFG;
-        global $SESSION, $OUTPUT, $PAGE, $DB;
+        global $frm;
 
         // First, cleanup old crap.
         \auth_antihammer\antihammer::clean_ip_hammering($this->config);

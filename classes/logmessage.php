@@ -314,7 +314,7 @@ class logmessage {
      * @return int insert ID
      */
     final public static function log_message($type, $msg, $module, $action, $data = null, $code = 0) {
-        global $USER, $DB;
+        global $USER;
 
         $rmsg = new static();
         $rmsg->set_action($action);
