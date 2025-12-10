@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class logcleaner extends \core\task\scheduled_task {
-
     /**
      * Return the localised name for this task
      *
@@ -60,8 +59,7 @@ class logcleaner extends \core\task\scheduled_task {
             mtrace(get_string('config:autocleanlog:disabled', 'auth_antihammer'));
             return;
         }
-        $params = array(time() - (int)config::get('autocleanlog_after'));
+        $params = [time() - (int)config::get('autocleanlog_after')];
         $DB->delete_records_select('auth_antihammer_log', 'datecreated < ?', $params);
     }
-
 }

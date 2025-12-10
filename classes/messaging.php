@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class messaging {
-
     /**
      * send out messages about blocked IPs and/or accounts
      *
@@ -58,7 +57,7 @@ class messaging {
         }
         // Process using messaging?
         if (!empty($config->usemessaging)) {
-            $contexturl = new \moodle_url('/auth/antihammer/admin.php', array('page' => 'apreport'));
+            $contexturl = new \moodle_url('/auth/antihammer/admin.php', ['page' => 'apreport']);
             $admins = get_admins();
             foreach ($admins as $admin) {
                 // Set recipient's name.
@@ -116,8 +115,6 @@ class messaging {
                 $messagetext = format_text_email($messagehtml, FORMAT_HTML);
                 email_to_user($mainadmin, $supportuser, $subject, $messagetext, $messagehtml);
             }
-
         }
     }
-
 }

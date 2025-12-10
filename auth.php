@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -34,11 +34,10 @@ require_once($CFG->libdir . '/authlib.php');
  * Plugin for no authentication.
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auth_plugin_antihammer extends auth_plugin_base {
-
     /**
      * @var string
      */
@@ -52,12 +51,17 @@ class auth_plugin_antihammer extends auth_plugin_base {
     /**
      * @var auth_antihammer\repeatoffender
      */
-    protected $repeatoffender;
+    protected $iprepeatoffender;
 
     /**
      * @var auth_antihammer\antihammer
      */
     protected $userhammer;
+
+    /**
+     * @var auth_antihammer\repeatoffender
+     */
+    protected $userrepeatoffender;
 
     /**
      * Constructor.
@@ -169,26 +173,41 @@ class auth_plugin_antihammer extends auth_plugin_base {
         }
 
         // Detect hammering and/or blocks.
-        try {
-            // Do we already have submitted data?
-            $frm = data_submitted();
-            if (isset($frm->username) && isset($frm->password)) {
-                if (strlen($frm->username) > 0 && strlen($frm->password) > 0) {
-                    // IP hammering block BEFORE username blocks.
-                    $this->detect_ip_hammering();
-                    $this->detect_user_hammering($frm->username);
+        // Do we already have submitted data?
+        $frm = data_submitted();
+
+        $blocked = false;
+        $blockdata = [];
+        if (isset($frm->username) && isset($frm->password)) {
+            if (strlen($frm->username) > 0 && strlen($frm->password) > 0) {
+                // Pre load USER hammer. If we're already blocked, redirect.
+                $this->load_user_hammer($frm->username);
+                if ($this->userhammer->blocked) {
+                    // Redirect to error page, do not notify or log.
+                    if (!empty($this->config->blockpage)) {
+                        redirect(new moodle_url($this->config->blockpage));
+                    } else {
+                        redirect(new moodle_url('/auth/antihammer/blocked.php'));
+                    }
                 }
+
+                // Process hammering..
+                $blocked = $this->detect_hammering($frm->username, $blockdata);
             }
-        } catch (\auth_antihammer\exception $lex) {
-            // Log object and message.
-            $error = get_string('log:info:blocked', 'auth_antihammer', $lex->getMessage());
-            $data = '';
-            if ((bool) $this->iphammer->blocked) {
-                $data = serialize($this->iphammer);
-            } else if ((bool) $this->userhammer->blocked) {
-                $data = serialize($this->userhammer);
+        }
+
+        if ($blocked) {
+            if (isset($blockdata['ip']) && isset($blockdata['ip']['blocked']) && $blockdata['ip']['blocked']) {
+                // Log object and message.
+                $error = get_string('log:info:blocked', 'auth_antihammer', $blockdata['ip']['msg']);
+                \auth_antihammer\logmessage::log_info($error, 'auth/antihammer', 'blocked', $this->iphammer, 0);
             }
-            \auth_antihammer\logmessage::log_info($error, 'auth/antihammer', 'blocked', $data, $lex->getCode());
+
+            if (isset($blockdata['user']) && isset($blockdata['user']['blocked']) && $blockdata['user']['blocked']) {
+                // Log object and message.
+                $error = get_string('log:info:blocked', 'auth_antihammer', $blockdata['user']['msg']);
+                \auth_antihammer\logmessage::log_info($error, 'auth/antihammer', 'blocked', $this->userhammer, 0);
+            }
 
             // Process messages if needed.
             $a = new stdClass();
@@ -244,14 +263,69 @@ class auth_plugin_antihammer extends auth_plugin_base {
      * Load IP hammer
      */
     protected function load_ip_hammer() {
-        $params = array();
+        $params = [];
         $params['type'] = \auth_antihammer\antihammer::TYPE_IP;
         $params['ip'] = $this->currentip;
         $this->iphammer = \auth_antihammer\antihammer::find($params);
         // Add to repeat offenders if enabled.
         if ($this->config->enablerepeatoffenders) {
-            $this->repeatoffender = \auth_antihammer\repeatoffender::append_to_ip_record($this->currentip);
+            $this->iprepeatoffender = \auth_antihammer\repeatoffender::append_to_ip_record($this->currentip);
         }
+    }
+
+    /**
+     * Load user hammer
+     *
+     * @param string $username
+     */
+    protected function load_user_hammer($username) {
+        global $DB;
+        $userobj = $DB->get_record('user', ['username' => $username], '*', IGNORE_MISSING);
+        $params = [];
+        $params['type'] = \auth_antihammer\antihammer::TYPE_USER;
+        $params['ip'] = $this->currentip;
+        $params['username'] = $username;
+        $params['userid'] = $userobj->id ?? 0;
+        $this->userhammer = \auth_antihammer\antihammer::find($params);
+        // Add to repeat offenders if enabled.
+        if ($this->config->enablerepeatoffenders) {
+            if (!empty($userobj) && !empty($userobj->id)) {
+                $this->userrepeatoffender = \auth_antihammer\repeatoffender::append_to_user_record($userobj->id);
+            }
+        }
+    }
+
+    /**
+     * Detect/insert hammering records, both IP and user type.
+     *
+     * @param string $username
+     * @param array $data
+     * @return boolean
+     * @throws \auth_antihammer\exception
+     */
+    protected function detect_hammering($username, array &$data): bool {
+        $blocked = false;
+        try {
+            if ($this->detect_ip_hammering()) {
+                $blocked = true;
+                $data['ip'] = ['blocked' => true];
+            }
+        } catch (\auth_antihammer\exception $ex1) {
+            $blocked = true;
+            $data['ip'] = ['blocked' => true, 'msg' => $ex1->getMessage()];
+        }
+
+        try {
+            if ($this->detect_user_hammering($username)) {
+                $blocked = true;
+                $data['user'] = ['blocked' => true];
+            }
+        } catch (\auth_antihammer\exception $ex2) {
+            $blocked = true;
+            $data['user'] = ['blocked' => true, 'msg' => $ex2->getMessage()];
+        }
+
+        return $blocked;
     }
 
     /**
@@ -276,7 +350,7 @@ class auth_plugin_antihammer extends auth_plugin_base {
 
         // Now check if to be blocked.
         if ($this->config->enablerepeatoffenders) {
-            $blockduration = $this->repeatoffender->get_block_duration($this->config->ip_attemptcounter);
+            $blockduration = $this->iprepeatoffender->get_block_duration($this->config->ip_attemptcounter);
         } else {
             $blockduration = $this->config->ip_attemptcounter;
         }
@@ -294,8 +368,8 @@ class auth_plugin_antihammer extends auth_plugin_base {
         if ($this->iphammer->blocked) {
             // Add to repeat offender?
             if ($this->config->enablerepeatoffenders) {
-                $this->repeatoffender->blockcounter++;
-                $this->repeatoffender->save();
+                $this->iprepeatoffender->blockcounter++;
+                $this->iprepeatoffender->save();
             }
 
             // Add to globals?
@@ -318,22 +392,24 @@ class auth_plugin_antihammer extends auth_plugin_base {
         if (!(bool) $this->config->blockusername) {
             return false;
         }
-        $params = array();
-        $params['type'] = \auth_antihammer\antihammer::TYPE_USER;
-        $params['ip'] = $this->currentip;
-        $params['username'] = $username;
-        $this->userhammer = \auth_antihammer\antihammer::find($params);
+
         // Check if already blocked.
         if ($this->userhammer->blocked) {
-            throw new \auth_antihammer\exception('err:blocked:user', '', $this->userhammer);
+            throw new \auth_antihammer\exception('err:blocked:ip', '', $this->userhammer);
         }
 
-        $this->userhammer->username = $username;
         $this->userhammer->ip = $this->currentip;
         $this->userhammer->count++;
 
         // Now check if to be blocked.
-        $timecheck = $this->userhammer->firstattempt + $this->config->attemptcounter;
+        if ($this->config->enablerepeatoffenders) {
+            $blockduration = $this->userrepeatoffender->get_block_duration($this->config->attemptcounter);
+        } else {
+            $blockduration = $this->config->attemptcounter;
+        }
+
+        // Now check if to be blocked.
+        $timecheck = $this->userhammer->firstattempt + $blockduration;
         if ((time() <= $timecheck) && ($this->userhammer->count >= $this->config->attempts)) {
             // Set blocked.
             $this->userhammer->blocked = 1;
@@ -342,11 +418,18 @@ class auth_plugin_antihammer extends auth_plugin_base {
             // Reset firstattempt (to prevent messing up in case cleanup is disabled).
             $this->userhammer->firstattempt = time();
         }
+
         $this->userhammer->save();
 
         if ($this->userhammer->blocked) {
+            // Add to repeat offender?
+            if ($this->config->enablerepeatoffenders) {
+                $this->userrepeatoffender->blockcounter++;
+                $this->userrepeatoffender->ip = $this->currentip;
+                $this->userrepeatoffender->save();
+            }
+
             throw new \auth_antihammer\exception('err:blocked:user', '', $this->userhammer);
         }
     }
-
 }

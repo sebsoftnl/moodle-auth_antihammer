@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,16 +35,25 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class repeatoffender {
-
     /**
      * primary key identifier
      * @var int
      */
     public $id = 0;
+    /**
+     * RO Type
+     * @var string
+     */
+    public $typ = 'ip';
+    /**
+     * userid
+     * @var int
+     */
+    public $userid = 0;
     /**
      * IP address
      * @var string
@@ -86,6 +95,46 @@ class repeatoffender {
      */
     public function set_id($id) {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * Get RO type
+     *
+     * @return string
+     */
+    public function get_typ(): string {
+        return $this->typ;
+    }
+
+    /**
+     * Set RO type
+     *
+     * @param string $typ
+     * @return $this
+     */
+    public function set_typ(string $typ) {
+        $this->typ = $typ;
+        return $this;
+    }
+
+    /**
+     * Get userid
+     *
+     * @return int
+     */
+    public function get_userid(): int {
+        return $this->userid;
+    }
+
+    /**
+     * Set userid
+     *
+     * @param int $userid
+     * @return $this
+     */
+    public function set_userid(int $userid) {
+        $this->userid = $userid;
         return $this;
     }
 
@@ -227,7 +276,7 @@ class repeatoffender {
             if ((bool)$config->addcfgipblock && $this->type === self::TYPE_IP && $this->blocked) {
                 self::remove_blocked_ip_from_global($this->ip);
             }
-            return $DB->delete_records('auth_antihammer_ro', array('id' => $this->id));
+            return $DB->delete_records('auth_antihammer_ro', ['id' => $this->id]);
         }
         return false;
     }
@@ -252,11 +301,11 @@ class repeatoffender {
      */
     final public static function get_ip_record($ip) {
         global $DB;
-        $record = $DB->get_record('auth_antihammer_ro', ['ip' => $ip]);
+        $record = $DB->get_record('auth_antihammer_ro', ['typ' => 'ip', 'ip' => $ip]);
         if ($record !== false) {
             return self::create_from_object($record);
         } else {
-            return static::create_from_object(['ip' => $ip]);
+            return static::create_from_object(['typ' => 'ip', 'ip' => $ip]);
         }
     }
 
@@ -268,6 +317,35 @@ class repeatoffender {
      */
     final public static function append_to_ip_record($ip) {
         $record = static::get_ip_record($ip);
+        $record->counter++;
+        $record->save();
+        return $record;
+    }
+
+    /**
+     * Find an instance in the database based on the given userid.
+     *
+     * @param int $userid
+     * @return \auth_hammer\repeatoffender
+     */
+    final public static function get_user_record($userid) {
+        global $DB;
+        $record = $DB->get_record('auth_antihammer_ro', ['typ' => 'user', 'userid' => $userid]);
+        if ($record !== false) {
+            return self::create_from_object($record);
+        } else {
+            return static::create_from_object(['typ' => 'user', 'userid' => $userid]);
+        }
+    }
+
+    /**
+     * Update repeat offender record in the database based on the given userid.
+     *
+     * @param int $userid
+     * @return \auth_hammer\repeatoffender
+     */
+    final public static function append_to_user_record($userid) {
+        $record = static::get_user_record($userid);
         $record->counter++;
         $record->save();
         return $record;
@@ -293,5 +371,4 @@ class repeatoffender {
         }
         return $span;
     }
-
 }

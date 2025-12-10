@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class config {
-
     /**
      *
      * @var whether or not config has been loaded yet
@@ -129,8 +128,7 @@ class config {
         if (empty($rs[1])) {
             return (empty($rs[0]) ? null : $rs[0]);
         } else {
-            return array($rs[1], $rs[0]);
+            return [$rs[1], $rs[0]];
         }
     }
-
 }

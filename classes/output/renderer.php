@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,11 +39,10 @@ use moodle_url;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Display logs page for administrators
      */
@@ -101,8 +100,8 @@ class renderer extends plugin_renderer_base {
         $out .= html_writer::end_div();
         $out .= $this->get_lockoutthreshold_warning();
         $record->data = unserialize($record->data);
-        $datefields = array('datecreated', 'blocktime', 'firstattempt');
-        $out .= $this->obj_to_table($record, 1, 5, array('id'), $datefields);
+        $datefields = ['datecreated', 'blocktime', 'firstattempt'];
+        $out .= $this->obj_to_table($record, 1, 5, ['id'], $datefields);
         $out .= html_writer::end_div();
         $out .= $this->footer();
         return $out;
@@ -151,29 +150,48 @@ class renderer extends plugin_renderer_base {
      * @param string $selected selected tab
      * @param array $params any paramaters needed for the base url
      */
-    protected function admin_tabs($selected, $params = array()) {
+    protected function admin_tabs($selected, $params = []) {
         $config = get_config('auth_antihammer');
-        $tabs = array();
-        $tabs[] = $this->create_pictab('apreport', 'hammer', 'auth_antihammer',
-                new \moodle_url('/auth/antihammer/admin.php', array_merge($params, array('page' => 'apreport'))),
-                get_string('ap:report', 'auth_antihammer'));
-        $tabs[] = $this->create_pictab('aplog', 'i/report', 'moodle',
-                new \moodle_url('/auth/antihammer/admin.php', array_merge($params, array('page' => 'aplog'))),
-                get_string('ap:log', 'auth_antihammer'));
+        $tabs = [];
+        $tabs[] = $this->create_pictab(
+            'apreport',
+            'hammer',
+            'auth_antihammer',
+            new \moodle_url('/auth/antihammer/admin.php', array_merge($params, ['page' => 'apreport'])),
+            get_string('ap:report', 'auth_antihammer')
+        );
+        $tabs[] = $this->create_pictab(
+            'aplog',
+            'i/report',
+            'moodle',
+            new \moodle_url('/auth/antihammer/admin.php', array_merge($params, ['page' => 'aplog'])),
+            get_string('ap:log', 'auth_antihammer')
+        );
         if ($config->enablerepeatoffenders) {
-            $tabs[] = $this->create_pictab('roreport', 'i/report', 'moodle',
-                    new \moodle_url('/auth/antihammer/admin.php', array_merge($params, array('page' => 'roreport'))),
-                    get_string('ap:ro', 'auth_antihammer'));
+            $tabs[] = $this->create_pictab(
+                'roreport',
+                'i/report',
+                'moodle',
+                new \moodle_url('/auth/antihammer/admin.php', array_merge($params, ['page' => 'roreport'])),
+                get_string('ap:ro', 'auth_antihammer')
+            );
         }
         if ($selected === 'logdetails') {
-            $tabs[] = $this->create_pictab('logdetails', 'details', 'auth_antihammer',
-                    new \moodle_url('/auth/antihammer/admin.php',
-                    array_merge($params, array('page' => 'aplog', 'action' => 'details'))),
-                    get_string('ap:logdetails', 'auth_antihammer'));
+            $tabs[] = $this->create_pictab(
+                'logdetails',
+                'details',
+                'auth_antihammer',
+                new \moodle_url('/auth/antihammer/admin.php', array_merge($params, ['page' => 'aplog', 'action' => 'details'])),
+                get_string('ap:logdetails', 'auth_antihammer')
+            );
         }
-        $tabs[] = $this->create_pictab('ahsettings', 'i/settings', 'moodle',
-                new \moodle_url('/admin/settings.php', array('section' => 'authsettingantihammer')),
-                get_string('pluginname', 'auth_antihammer'));
+        $tabs[] = $this->create_pictab(
+            'ahsettings',
+            'i/settings',
+            'moodle',
+            new \moodle_url('/admin/settings.php', ['section' => 'authsettingantihammer']),
+            get_string('pluginname', 'auth_antihammer')
+        );
         return $this->tabtree($tabs, $selected);
     }
 
@@ -189,8 +207,15 @@ class renderer extends plugin_renderer_base {
      * @param bool $linkedwhenselected whether to display a link under the tab name when it's selected
      * @return \tabobject
      */
-    protected function create_pictab($id, $pix = null, $component = null, $link = null,
-            $text = '', $title = '', $linkedwhenselected = false) {
+    protected function create_pictab(
+        $id,
+        $pix = null,
+        $component = null,
+        $link = null,
+        $text = '',
+        $title = '',
+        $linkedwhenselected = false
+    ) {
         $img = '';
         if ($pix !== null) {
             $img = $this->image_url($pix, $component) . ' ';
@@ -212,7 +237,7 @@ class renderer extends plugin_renderer_base {
      * @param array $skipfields
      * @param array $datefields
      */
-    protected function obj_to_table($obj, $depth = 1, $maxdepth = 5, $skipfields = array('id'), $datefields = array()) {
+    protected function obj_to_table($obj, $depth = 1, $maxdepth = 5, $skipfields = ['id'], $datefields = []) {
         if ($depth > $maxdepth) {
             return '**RECURSION**';
         }
@@ -254,5 +279,4 @@ class renderer extends plugin_renderer_base {
         }
         return '';
     }
-
 }

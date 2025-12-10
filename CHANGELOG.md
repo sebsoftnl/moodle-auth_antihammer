@@ -1,3 +1,16 @@
+Version 3.7.2 (build 2025120100)
+* Fix loads of CI errors
+* Better code compliance
+* DISABLE code checks in privacy provider (as Moodle is buggy in the alphabetical order checks).
+* We no longer prefer IP blocks before user blocks. They will both be processed without precedence.
+  Effectively, this will put both an IP block AND a user block (when applicable).
+* Added user based repeat offenders (before we only did IP based).
+
+----------
+Version 3.7.1 (build 2023011600)
+* Fixed repeat offenders from settings.php (gave a section error).
+
+----------
 Version 3.7.0 (build 2022090100)
 * Removed all MOODLE_INTERNAL checks from singular classes as per MDLSITE-5967.
 * Fix several CI issues

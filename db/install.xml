@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="auth/antihammer/db" VERSION="20110720" COMMENT="XMLDB file for Moodle auth/antihammer"
+<XMLDB PATH="auth/antihammer/db" VERSION="2025120101" COMMENT="XMLDB file for Moodle auth/antihammer"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="auth_antihammer" COMMENT="auth_antihammer table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
-        <FIELD NAME="type" TYPE="char" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="false" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="ip" TYPE="char" LENGTH="100" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="count" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
-        <FIELD NAME="firstattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
-        <FIELD NAME="blocked" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
-        <FIELD NAME="blocktime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="ip" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="count" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="firstattempt" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="blocked" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="blocktime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
@@ -25,15 +25,15 @@
     </TABLE>
     <TABLE NAME="auth_antihammer_log" COMMENT="auth_antihammer_log table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="module" TYPE="char" LENGTH="32" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="type" TYPE="char" LENGTH="32" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="msg" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="code" TYPE="char" LENGTH="32" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="action" TYPE="char" LENGTH="100" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="data" TYPE="text" LENGTH="medium" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="datecreated" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="module" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="msg" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="code" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="data" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="datecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
@@ -44,16 +44,21 @@
     </TABLE>
     <TABLE NAME="auth_antihammer_ro" COMMENT="auth_antihammer_ro table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
-        <FIELD NAME="ip" TYPE="char" LENGTH="100" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="counter" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="blockcounter" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="false" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="typ" TYPE="char" LENGTH="5" NOTNULL="true" DEFAULT="ip" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="ip" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="counter" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="blockcounter" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

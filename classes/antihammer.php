@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class antihammer {
-
     /**
      * Blocking type IP
      */
@@ -301,7 +300,7 @@ class antihammer {
             if ((bool)$config->addcfgipblock && $this->type === self::TYPE_IP && $this->blocked) {
                 self::remove_blocked_ip_from_global($this->ip);
             }
-            return $DB->delete_records('auth_antihammer', array('id' => $this->id));
+            return $DB->delete_records('auth_antihammer', ['id' => $this->id]);
         }
         return false;
     }
@@ -328,7 +327,7 @@ class antihammer {
     final public static function find($params) {
         global $DB;
         $sql = "SELECT * FROM {auth_antihammer} WHERE ";
-        $conditions = array();
+        $conditions = [];
         foreach ($params as $key => $unused) {
             $conditions[] = "$key = ?";
         }
@@ -337,9 +336,10 @@ class antihammer {
         if ($record !== false) {
             return self::create_from_object($record);
         } else {
-            $self = new self();
+            $self = self::create_from_object((object)$params);
             $self->firstattempt = time();
             $self->type = (isset($params['type']) ? $params['type'] : self::TYPE_USER);
+            $self->save();
             return $self;
         }
     }
@@ -374,7 +374,7 @@ class antihammer {
 
         // Clean if attempts are below count taking the time into account.
         $cleantime = time() - $config->ip_attemptcounter;
-        $params = array(self::TYPE_IP, $config->ip_attempts, $cleantime);
+        $params = [self::TYPE_IP, $config->ip_attempts, $cleantime];
         $DB->delete_records_select('auth_antihammer', 'type = ? AND count < ? AND firstattempt < ?', $params);
 
         if (!(bool) $config->autoclear_ipblock) {
@@ -382,7 +382,7 @@ class antihammer {
         }
         // Clean all blocked.
         $cleantime = time() - $config->autoclear_ipblock_after;
-        $params = array(self::TYPE_IP, $cleantime);
+        $params = [self::TYPE_IP, $cleantime];
         $DB->delete_records_select('auth_antihammer', 'type = ? AND blocktime < ? AND blocked = 1', $params);
     }
 
@@ -401,7 +401,7 @@ class antihammer {
 
         // Clean if attempts are below count taking the time into account.
         $cleantime = time() - $config->attemptcounter;
-        $params = array(self::TYPE_USER, $config->attempts, $cleantime);
+        $params = [self::TYPE_USER, $config->attempts, $cleantime];
         $DB->delete_records_select('auth_antihammer', 'type = ? AND count < ? AND firstattempt < ?', $params);
 
         if (!(bool) $config->autoclear_userblock) {
@@ -409,7 +409,7 @@ class antihammer {
         }
         // Clean all blocked.
         $cleantime = time() - $config->autoclear_userblock_after;
-        $params = array(self::TYPE_USER, $cleantime);
+        $params = [self::TYPE_USER, $cleantime];
         if ((bool)$config->addcfgipblock) {
             $iplist = $DB->get_fieldset_select('auth_antihammer', 'ip', 'type = ? AND blocktime < ? AND blocked = 1', $params);
             $iplist = array_unique($iplist);
@@ -427,7 +427,7 @@ class antihammer {
      */
     public static function clean_for_user($username) {
         global $DB;
-        $params = array($username);
+        $params = [$username];
         $DB->delete_records_select('auth_antihammer', 'username = ', $params);
     }
 
@@ -438,7 +438,7 @@ class antihammer {
      */
     public static function clean_for_userid($userid) {
         global $DB;
-        $params = array($userid);
+        $params = [$userid];
         $DB->delete_records_select('auth_antihammer', 'userid = ', $params);
     }
 
@@ -466,5 +466,4 @@ class antihammer {
             set_config('blockedip', implode("\n", $addresses));
         }
     }
-
 }

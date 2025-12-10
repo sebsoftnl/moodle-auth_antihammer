@@ -23,9 +23,10 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once("../../config.php");
 require_once($CFG->libdir . "/adminlib.php");
 
@@ -35,7 +36,7 @@ $action = optional_param('action', 'list', PARAM_ALPHAEXT);
 admin_externalpage_setup($page);
 require_capability('auth/antihammer:administration', context_system::instance());
 
-$pageparams = array('page' => $page, 'action' => $action);
+$pageparams = ['page' => $page, 'action' => $action];
 $pageurl = new moodle_url('/auth/antihammer/admin.php', $pageparams);
 $PAGE->set_url($pageurl);
 $PAGE->set_heading($SITE->fullname);
@@ -44,15 +45,15 @@ $renderer = $PAGE->get_renderer('auth_antihammer');
 
 auth_antihammer\util::check_notifications();
 
-switch($page) {
+switch ($page) {
     case 'aplog':
         switch ($action) {
             case 'delete':
                 require_capability('auth/antihammer:delete', context_system::instance());
                 require_sesskey();
                 $id = required_param('id', PARAM_INT);
-                $DB->delete_records('auth_antihammer_log', array('id' => $id));
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                $DB->delete_records('auth_antihammer_log', ['id' => $id]);
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'details':
@@ -74,15 +75,15 @@ switch($page) {
                 require_capability('auth/antihammer:delete', context_system::instance());
                 require_sesskey();
                 $id = required_param('id', PARAM_INT);
-                $DB->delete_records('auth_antihammer', array('id' => $id));
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                $DB->delete_records('auth_antihammer', ['id' => $id]);
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'deleteall':
                 require_capability('auth/antihammer:delete', context_system::instance());
                 require_sesskey();
                 $DB->delete_records('auth_antihammer');
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'deleteipblock':
@@ -90,7 +91,7 @@ switch($page) {
                 require_sesskey();
                 $ip = required_param('ip', PARAM_BASE64);
                 $DB->delete_records('auth_antihammer', ['ip' => base64_decode($ip)]);
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'whitelist':
@@ -98,7 +99,7 @@ switch($page) {
                 require_sesskey();
                 $ip = required_param('ip', PARAM_BASE64);
                 auth_antihammer\util::add_to_whitelist(base64_decode($ip));
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'list':
@@ -115,8 +116,8 @@ switch($page) {
                 require_capability('auth/antihammer:delete', context_system::instance());
                 require_sesskey();
                 $id = required_param('id', PARAM_INT);
-                $DB->delete_records('auth_antihammer_ro', array('id' => $id));
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                $DB->delete_records('auth_antihammer_ro', ['id' => $id]);
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'whitelist':
@@ -124,7 +125,7 @@ switch($page) {
                 require_sesskey();
                 $ip = required_param('ip', PARAM_BASE64);
                 auth_antihammer\util::add_to_whitelist(base64_decode($ip));
-                redirect(new moodle_url('/auth/antihammer/admin.php', array('page' => $page)));
+                redirect(new moodle_url('/auth/antihammer/admin.php', ['page' => $page]));
                 break;
 
             case 'list':

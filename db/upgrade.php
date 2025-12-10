@@ -49,7 +49,7 @@ function xmldb_auth_antihammer_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'blockcounter');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -57,6 +57,27 @@ function xmldb_auth_antihammer_upgrade($oldversion) {
 
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2020121600, 'auth', 'antihammer');
+    }
+
+    if ($oldversion < 2025120101) {
+        $table = new xmldb_table('auth_antihammer_ro');
+        $field = new xmldb_field('typ', XMLDB_TYPE_CHAR, '5', null, XMLDB_NOTNULL, null, 'ip', 'id');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'typ');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $index = new xmldb_index('idx-userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2025120101, 'auth', 'antihammer');
     }
 
     return true;

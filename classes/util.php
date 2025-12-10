@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
-
     /**
      * Notify enduser about things with this plugin.
      * For now this checks whether or not the plugin is enabled.
@@ -51,9 +50,11 @@ class util {
         }
 
         $getremoteaddrconf = get_config('moodle', 'getremoteaddrconf');
-        if ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR'] &&
-                ($getremoteaddrconf & GETREMOTEADDR_SKIP_HTTP_CLIENT_IP ||
-                $getremoteaddrconf & GETREMOTEADDR_SKIP_HTTP_X_FORWARDED_FOR)) {
+        if (
+            $_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR'] &&
+            ($getremoteaddrconf & GETREMOTEADDR_SKIP_HTTP_CLIENT_IP ||
+            $getremoteaddrconf & GETREMOTEADDR_SKIP_HTTP_X_FORWARDED_FOR)
+        ) {
             \core\notification::warning(get_string('plugin:getremoteaddrconf:notification', 'auth_antihammer'));
         }
     }
@@ -98,5 +99,4 @@ class util {
             $DB->delete_records('auth_antihammer', ['ip' => $ip]);
         }
     }
-
 }

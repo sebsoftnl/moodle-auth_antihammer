@@ -23,14 +23,16 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
+
 $plugin = new stdClass();
-$plugin->version   = 2022090100;
-$plugin->requires  = 2020110900;      // YYYYMMDDHH (This is the release version for Moodle 3.10).
-$plugin->release   = '3.7.0 (build 2022090100)';
+$plugin->version = 2025120101;
+$plugin->requires = 2020110900; // YYYYMMDDHH (This is the release version for Moodle 3.10).
+$plugin->release = '4.0.0 (build 2025120101)';
 $plugin->component = 'auth_antihammer'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->cron      = 0;
+$plugin->maturity = MATURITY_STABLE;
+$plugin->cron = 0;

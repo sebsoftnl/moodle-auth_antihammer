@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,11 +39,10 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class table extends \table_sql {
-
     /**
      * table type identifier for hammering stats
      */
@@ -146,7 +145,7 @@ class table extends \table_sql {
      */
     public function __construct($type = 'log') {
         global $USER;
-        parent::__construct(__CLASS__. $USER->id);
+        parent::__construct(__CLASS__ . $USER->id);
         $this->displaytype = $type;
         // Load localised strings to save CPU for lookups.
         $this->strdeletelog = get_string('action:delete:logitem', 'auth_antihammer');
@@ -172,10 +171,7 @@ class table extends \table_sql {
      * @return array list of view types
      */
     public static function get_viewtypes() {
-        return array(
-            self::HAMMER,
-            self::LOG,
-        );
+        return [self::HAMMER, self::LOG];
     }
 
     /**
@@ -219,8 +215,8 @@ class table extends \table_sql {
      * @param bool $useinitialsbar
      */
     protected function render_hammering($pagesize, $useinitialsbar = true) {
-        $this->define_columns(array('action', 'type', 'username', 'ip', 'count', 'firstattempt', 'blocked', 'blocktime'));
-        $this->define_headers(array(
+        $this->define_columns(['action', 'type', 'username', 'ip', 'count', 'firstattempt', 'blocked', 'blocktime']);
+        $this->define_headers([
             get_string('thead:action', 'auth_antihammer'),
             get_string('thead:type', 'auth_antihammer'),
             get_string('thead:username', 'auth_antihammer'),
@@ -229,10 +225,10 @@ class table extends \table_sql {
             get_string('thead:firstattempt', 'auth_antihammer'),
             get_string('thead:blocked', 'auth_antihammer'),
             get_string('thead:blocktime', 'auth_antihammer'),
-                ));
+        ]);
         $fields = 'h.*,NULL AS action';
         $where = '1 = 1';
-        $params = array();
+        $params = [];
         parent::set_sql($fields, '{auth_antihammer} h', $where, $params);
         $this->out($pagesize, $useinitialsbar);
     }
@@ -244,8 +240,8 @@ class table extends \table_sql {
      * @param bool $useinitialsbar
      */
     protected function render_logs($pagesize, $useinitialsbar = true) {
-        $this->define_columns(array('action', 'userid', 'module', 'type', 'msg', 'code', 'datecreated'));
-        $this->define_headers(array(
+        $this->define_columns(['action', 'userid', 'module', 'type', 'msg', 'code', 'datecreated']);
+        $this->define_headers([
             get_string('thead:action', 'auth_antihammer'),
             get_string('thead:userid', 'auth_antihammer'),
             get_string('thead:module', 'auth_antihammer'),
@@ -253,10 +249,10 @@ class table extends \table_sql {
             get_string('thead:msg', 'auth_antihammer'),
             get_string('thead:code', 'auth_antihammer'),
             get_string('thead:datecreated', 'auth_antihammer'),
-                ));
+        ]);
         $fields = 'l.*,NULL AS action';
         $where = '1 = 1';
-        $params = array();
+        $params = [];
         parent::set_sql($fields, '{auth_antihammer_log} l', $where, $params);
         $this->out($pagesize, $useinitialsbar);
     }
@@ -301,28 +297,36 @@ class table extends \table_sql {
                 break;
             default:
                 $actions[] = $OUTPUT->action_icon(
-                        new \moodle_url($this->baseurl,
-                                ['action' => 'deleteipblock', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
-                        new \pix_icon('i/delete', $this->strdeleteipblock),
-                        null,
-                        ['alt' => $this->strdeleteipblock]);
+                    new \moodle_url(
+                        $this->baseurl,
+                        ['action' => 'deleteipblock', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]
+                    ),
+                    new \pix_icon('i/delete', $this->strdeleteipblock),
+                    null,
+                    ['alt' => $this->strdeleteipblock]
+                );
                 $actions[] = $OUTPUT->action_icon(
-                        new \moodle_url($CFG->wwwroot . '/iplookup/index.php', ['ip' => $row->ip]),
-                        new \pix_icon('i/location', $this->striplookup),
-                        null,
-                        ['alt' => $this->striplookup, 'target' => '_new']);
+                    new \moodle_url($CFG->wwwroot . '/iplookup/index.php', ['ip' => $row->ip]),
+                    new \pix_icon('i/location', $this->striplookup),
+                    null,
+                    ['alt' => $this->striplookup, 'target' => '_new']
+                );
                 $actions[] = $OUTPUT->action_icon(
-                        new \moodle_url('https://whatismyipaddress.com/ip/'.$row->ip),
-                        new \pix_icon('i/publish', $this->strwhatismyip),
-                        null,
-                        ['alt' => $this->strwhatismyip, 'target' => '_new']);
+                    new \moodle_url('https://whatismyipaddress.com/ip/' . $row->ip),
+                    new \pix_icon('i/publish', $this->strwhatismyip),
+                    null,
+                    ['alt' => $this->strwhatismyip, 'target' => '_new']
+                );
                 if (!in_array($row->ip, $this->config->ipwhitelist)) {
                     $actions[] = $OUTPUT->action_icon(
-                            new \moodle_url($this->baseurl,
-                                    ['action' => 'whitelist', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
-                            new \pix_icon('t/check', $this->strwhitelist),
-                            null,
-                            ['alt' => $this->strwhitelist]);
+                        new \moodle_url(
+                            $this->baseurl,
+                            ['action' => 'whitelist', 'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]
+                        ),
+                        new \pix_icon('t/check', $this->strwhitelist),
+                        null,
+                        ['alt' => $this->strwhitelist]
+                    );
                 }
                 break;
         }
@@ -397,25 +401,27 @@ class table extends \table_sql {
         switch ($this->displaytype) {
             case self::LOG:
                 $actions[] = $OUTPUT->action_icon(
-                        new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
-                        new \pix_icon('i/delete', $this->strdeletelog),
-                        null,
-                        ['alt' => $this->strdeletelog]);
+                    new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
+                    new \pix_icon('i/delete', $this->strdeletelog),
+                    null,
+                    ['alt' => $this->strdeletelog]
+                );
                 $actions[] = $OUTPUT->action_icon(
-                        new \moodle_url($this->baseurl, ['action' => 'details', 'id' => $row->id, 'sesskey' => sesskey()]),
-                        new \pix_icon('i/preview', $this->strdetailslog),
-                        null,
-                        ['alt' => $this->strdetailslog]);
+                    new \moodle_url($this->baseurl, ['action' => 'details', 'id' => $row->id, 'sesskey' => sesskey()]),
+                    new \pix_icon('i/preview', $this->strdetailslog),
+                    null,
+                    ['alt' => $this->strdetailslog]
+                );
                 break;
             default:
                 $actions[] = $OUTPUT->action_icon(
-                        new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
-                        new \pix_icon('i/delete', $this->strdeletehammer),
-                        null,
-                        ['alt' => $this->strdeletehammer]);
+                    new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
+                    new \pix_icon('i/delete', $this->strdeletehammer),
+                    null,
+                    ['alt' => $this->strdeletehammer]
+                );
                 break;
         }
         return implode('', $actions);
     }
-
 }

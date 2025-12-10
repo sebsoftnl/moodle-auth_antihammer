@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class logmessage {
-
     /**
      * primary key identifier
      * @var int
@@ -284,7 +283,7 @@ class logmessage {
     public function delete() {
         global $DB;
         if ($this->id > 0) {
-            return $DB->delete_records('auth_antihammer_log', array('id' => $this->id));
+            return $DB->delete_records('auth_antihammer_log', ['id' => $this->id]);
         }
         return false;
     }
@@ -308,23 +307,27 @@ class logmessage {
      * @param string $msg message
      * @param string $module module
      * @param string $action action
-     * @param string $data any extra data
+     * @param mixed $data any extra data
      * @param int $code message code
      *
      * @return int insert ID
      */
     final public static function log_message($type, $msg, $module, $action, $data = null, $code = 0) {
-        global $USER;
+        $datastr = null;
+        if (!empty($data)) {
+            // We know this is a antihammer instance.
+            $datastr = serialize($data);
+        }
 
         $rmsg = new static();
         $rmsg->set_action($action);
-        $rmsg->set_data($data);
+        $rmsg->set_data($datastr);
         $rmsg->set_datecreated(time());
         $rmsg->set_module($module);
         $rmsg->set_msg($msg);
         $rmsg->set_code($code);
         $rmsg->set_type($type);
-        $rmsg->set_userid($USER->id);
+        $rmsg->set_userid($data->userid ?? 0);
 
         return $rmsg->save();
     }
@@ -335,7 +338,7 @@ class logmessage {
      * @param string $msg message
      * @param string $module module
      * @param string $action action
-     * @param string $data any extra data
+     * @param mixed $data any extra data
      * @param int $code message code
      *
      * @return int insert ID
@@ -350,7 +353,7 @@ class logmessage {
      * @param string $msg message
      * @param string $module module
      * @param string $action action
-     * @param string $data any extra data
+     * @param mixed $data any extra data
      * @param int $code message code
      *
      * @return int insert ID
@@ -365,7 +368,7 @@ class logmessage {
      * @param string $msg message
      * @param string $module module
      * @param string $action action
-     * @param string $data any extra data
+     * @param mixed $data any extra data
      * @param int $code message code
      *
      * @return int insert ID
@@ -383,7 +386,7 @@ class logmessage {
     final public static function get_by_id($id) {
         global $DB;
 
-        $data = $DB->get_record('auth_antihammer_log', array('id' => $id));
+        $data = $DB->get_record('auth_antihammer_log', ['id' => $id]);
         if (!$data) {
             return null;
         }
@@ -405,5 +408,4 @@ class logmessage {
         $fields = '*';
         return $DB->get_records('auth_antihammer_log', $params, $sort, $fields, $start, $limit);
     }
-
 }

@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rotable extends \table_sql {
@@ -97,13 +97,19 @@ class rotable extends \table_sql {
      * @var stdClass
      */
     protected $config;
+    /**
+     * User cache
+     *
+     * @var array
+     */
+    protected $ucache = [];
 
     /**
      * Create a new instance of the table
      */
     public function __construct() {
         global $USER;
-        parent::__construct(__CLASS__. $USER->id);
+        parent::__construct(__CLASS__ . $USER->id);
         // Load localised strings to save CPU for lookups.
         $this->strdelete = get_string('action:delete:roitem', 'auth_antihammer');
         $this->strwhatismyip = get_string('lookup:whatismyip', 'auth_antihammer');
@@ -114,7 +120,25 @@ class rotable extends \table_sql {
         $this->no_sorting('nextduration');
         $this->config = get_config('auth_antihammer');
         $this->config->ipwhitelist = isset($this->config->ipwhitelist) ?
-                array_unique(array_map('trim', explode("\n", $this->config->ipwhitelist))) : [];
+            array_unique(array_map('trim', explode("\n", $this->config->ipwhitelist))) : [];
+        $this->ucache = [];
+    }
+
+    /**
+     * Load user
+     * @param int $userid
+     */
+    protected function get_user($userid) {
+        global $DB;
+        if (!isset($this->ucache[$userid])) {
+            $user = $DB->get_record('user', ['id' => $userid], '*', IGNORE_MISSING);
+            if (!$user) {
+                $this->ucache[$userid] = '-';
+            } else {
+                $this->ucache[$userid] = fullname($user);
+            }
+        }
+        return $this->ucache[$userid];
     }
 
     /**
@@ -140,18 +164,31 @@ class rotable extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_columns(array('action', 'ip', 'counter', 'blockcounter', 'nextduration', 'whitelisted'));
-        $this->define_headers(array(
+        $this->define_columns([
+            'action',
+            'typ',
+            'userid',
+            'ip',
+            'counter',
+            'blockcounter',
+            'nextduration',
+            'whitelisted',
+            'timemodified',
+        ]);
+        $this->define_headers([
             get_string('thead:action', 'auth_antihammer'),
+            get_string('thead:type', 'auth_antihammer'),
+            get_string('user'),
             get_string('thead:ip', 'auth_antihammer'),
             get_string('thead:count', 'auth_antihammer'),
             get_string('thead:blockcounter', 'auth_antihammer'),
             get_string('thead:nextblockduration', 'auth_antihammer'),
             get_string('thead:whitelisted', 'auth_antihammer'),
-                ));
+            get_string('thead:latestattempt', 'auth_antihammer'),
+        ]);
         $fields = 'ro.*,NULL AS action';
         $where = '1 = 1';
-        $params = array();
+        $params = [];
         parent::set_sql($fields, '{auth_antihammer_ro} ro', $where, $params);
         $this->out($pagesize, $useinitialsbar);
     }
@@ -181,22 +218,31 @@ class rotable extends \table_sql {
         global $CFG, $OUTPUT;
         $actions = [];
         $actions[] = $OUTPUT->action_icon(
-                new \moodle_url($CFG->wwwroot . '/iplookup/index.php', ['ip' => $row->ip]),
-                new \pix_icon('i/location', $this->striplookup),
-                null,
-                ['alt' => $this->striplookup, 'target' => '_new']);
+            new \moodle_url($CFG->wwwroot . '/iplookup/index.php', ['ip' => $row->ip]),
+            new \pix_icon('i/location', $this->striplookup),
+            null,
+            ['alt' => $this->striplookup, 'target' => '_new']
+        );
         $actions[] = $OUTPUT->action_icon(
-                new \moodle_url('https://whatismyipaddress.com/ip/'.$row->ip),
-                new \pix_icon('i/publish', $this->strwhatismyip),
-                null,
-                ['alt' => $this->strwhatismyip, 'target' => '_new']);
+            new \moodle_url('https://whatismyipaddress.com/ip/' . $row->ip),
+            new \pix_icon('i/publish', $this->strwhatismyip),
+            null,
+            ['alt' => $this->strwhatismyip, 'target' => '_new']
+        );
         if (!in_array($row->ip, $this->config->ipwhitelist)) {
             $actions[] = $OUTPUT->action_icon(
-                    new \moodle_url($this->baseurl, ['action' => 'whitelist',
-                            'ip' => base64_encode($row->ip), 'sesskey' => sesskey()]),
-                    new \pix_icon('t/check', $this->strwhitelist),
-                    null,
-                    ['alt' => $this->strwhitelist]);
+                new \moodle_url(
+                    $this->baseurl,
+                    [
+                        'action' => 'whitelist',
+                        'ip' => base64_encode($row->ip),
+                        'sesskey' => sesskey(),
+                    ]
+                ),
+                new \pix_icon('t/check', $this->strwhitelist),
+                null,
+                ['alt' => $this->strwhitelist]
+            );
         }
 
         return $row->ip . implode('', $actions);
@@ -228,6 +274,16 @@ class rotable extends \table_sql {
     }
 
     /**
+     * Render visual representation of the 'timemodified' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_timemodified($row) {
+        return date('Y-m-d H:i:s', $row->timemodified);
+    }
+
+    /**
      * Render visual representation of the 'blocktime' column for use in the table
      *
      * @param \stdClass $row
@@ -245,6 +301,16 @@ class rotable extends \table_sql {
      */
     public function col_datecreated($row) {
         return date('Y-m-d H:i:s', $row->datecreated);
+    }
+
+    /**
+     * Render visual representation of the 'userid' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_userid($row) {
+        return $this->get_user($row->userid);
     }
 
     /**
@@ -266,10 +332,11 @@ class rotable extends \table_sql {
         global $OUTPUT;
         $actions = [];
         $actions[] = $OUTPUT->action_icon(
-                new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
-                new \pix_icon('i/delete', $this->strdelete),
-                null,
-                ['alt' => $this->strdelete]);
+            new \moodle_url($this->baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]),
+            new \pix_icon('i/delete', $this->strdelete),
+            null,
+            ['alt' => $this->strdelete]
+        );
 
         return implode('', $actions);
     }

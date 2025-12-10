@@ -23,7 +23,7 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,11 +35,10 @@ namespace auth_antihammer;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class exception extends \moodle_exception {
-
     /**
      * Create a new instance of the exception
      *
@@ -51,5 +50,4 @@ class exception extends \moodle_exception {
     public function __construct($errorcode, $link = '', $a = null, $debuginfo = null) {
         parent::__construct($errorcode, 'auth_antihammer', $link, $a, $debuginfo);
     }
-
 }

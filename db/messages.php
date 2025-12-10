@@ -23,18 +23,18 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
-$messageproviders = array (
+$messageproviders = [
     // Notify someone about blocked useraccounts or IPs.
-    'antihammerblocking' => array (
+    'antihammerblocking' => [
         'capability'  => 'auth/antihammer:notifyblocking',
-        'defaults' => array(
+        'defaults' => [
             'popup' => MESSAGE_PERMITTED,
             'email' => MESSAGE_PERMITTED,
-            'anyotheroutput' => MESSAGE_PERMITTED
-        )
-    ),
-);
+            'anyotheroutput' => MESSAGE_PERMITTED,
+        ],
+    ],
+];

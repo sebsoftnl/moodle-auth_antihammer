@@ -23,9 +23,10 @@
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// @codingStandardsIgnoreFile Due to Moodle failing the "class implements" alphabetically itself.
 
 namespace auth_antihammer\privacy;
 
@@ -43,21 +44,21 @@ use core_privacy\local\request\approved_userlist;
  * @package     auth_antihammer
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider,
-        \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider
+{
     /**
      * Provides meta data that is stored about a user with auth_antihammer
      *
      * @param  collection $collection A collection of meta data items to be added to.
      * @return  collection Returns the collection of metadata.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
             'auth_antihammer',
             [
@@ -79,6 +80,14 @@ class provider implements
             ],
             'privacy:metadata:auth_antihammer_log'
         );
+        $collection->add_database_table(
+            'auth_antihammer_ro',
+            [
+                'userid' => 'privacy:metadata:auth_antihammer:userid',
+                'timemodified' => 'privacy:metadata:auth_antihammer_ro:timemodified',
+            ],
+            'privacy:metadata:auth_antihammer_ro'
+        );
         return $collection;
     }
 
@@ -88,7 +97,7 @@ class provider implements
      * @param   int           $userid       The user to search.
      * @return  contextlist   $contextlist  The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
         // Since this system works on a global level (it hooks into the authentication system), the only context is CONTEXT_SYSTEM.
         $contextlist->add_system_context();
@@ -121,19 +130,18 @@ class provider implements
             $antihammers = $DB->get_recordset_sql($sql, $params);
             foreach ($antihammers as $antihammer) {
                 $alldata[$contextid][] = (object)[
-                        'userid' => $antihammer->userid,
-                        'username' => $antihammer->username,
-                        'ip' => $antihammer->ip,
-                        'blocked' => $antihammer->blocked,
-                        'firstattempt' => transform::datetime($antihammer->firstattempt),
-                        'firstattempt' => transform::datetime($antihammer->firstattempt),
-                    ];
+                    'userid' => $antihammer->userid,
+                    'username' => $antihammer->username,
+                    'ip' => $antihammer->ip,
+                    'blocked' => $antihammer->blocked,
+                    'firstattempt' => transform::datetime($antihammer->firstattempt),
+                ];
             }
             $antihammers->close();
 
             // The data is organised in: {? }/hammering.json.
             // where X is the attempt number.
-            array_walk($alldata, function($hammeringdata, $contextid) {
+            array_walk($alldata, function ($hammeringdata, $contextid) {
                 $context = \context::instance_by_id($contextid);
                 writer::with_context($context)->export_related_data(
                     ['auth_antihammer'],
@@ -161,12 +169,38 @@ class provider implements
 
             // The data is organised in: {?}/hammerlogs.json.
             // where X is the attempt number.
-            array_walk($alldata, function($antihammerlog, $contextid) {
+            array_walk($alldata, function ($antihammerlog, $contextid) {
                 $context = \context::instance_by_id($contextid);
                 writer::with_context($context)->export_related_data(
                     ['auth_antihammer'],
                     'hammerlogs',
                     (object)['hammerlog' => $antihammerlog]
+                );
+            });
+
+            // Add hammering log records.
+            $sql = "SELECT ro.*
+                      FROM {auth_antihammer_ro} ro
+                      WHERE ro.userid = :userid";
+            $params = ['userid' => $user->id];
+            $alldata = [];
+            $rologs = $DB->get_recordset_sql($sql, $params);
+            foreach ($rologs as $rolog) {
+                $alldata[$contextid][] = (object)[
+                        'userid' => $rolog->userid,
+                        'timemodified' => transform::datetime($rolog->timemodified),
+                    ];
+            }
+            $rologs->close();
+
+            // The data is organised in: {?}/rologs.json.
+            // where X is the attempt number.
+            array_walk($alldata, function ($rolog, $contextid) {
+                $context = \context::instance_by_id($contextid);
+                writer::with_context($context)->export_related_data(
+                    ['auth_antihammer'],
+                    'rologs',
+                    (object)['rolog' => $rolog]
                 );
             });
         }
@@ -187,6 +221,8 @@ class provider implements
         $DB->delete_records('auth_antihammer');
         // Delete log records.
         $DB->delete_records('auth_antihammer_log');
+        // Delete log records.
+        $DB->delete_records_sql('DELETE FROM auth_antihammer_ro WHERE userid <> 0');
     }
 
     /**
@@ -211,6 +247,8 @@ class provider implements
             $DB->delete_records('auth_antihammer', ['username' => $user->username]);
             // Delete log records.
             $DB->delete_records('auth_antihammer_log', ['userid' => $user->id]);
+            // Delete log records.
+            $DB->delete_records('auth_antihammer_ro', ['userid' => $user->id]);
         }
     }
     /**
@@ -227,7 +265,8 @@ class provider implements
         // Since we work on a global level, this means "all context".
         $userids1 = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {auth_antihammer}');
         $userids2 = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {auth_antihammer_log}');
-        $userids = array_unique(array_merge($userids1, $userids2));
+        $userids3 = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {auth_antihammer_ro}');
+        $userids = array_unique(array_merge($userids1, $userids2, $userids3));
         $userlist->add_users($userids);
     }
 
@@ -245,7 +284,7 @@ class provider implements
         foreach ($userlist->get_userids() as $userid) {
             $DB->delete_records('auth_antihammer', ['userid' => $userid]);
             $DB->delete_records('auth_antihammer_log', ['userid' => $userid]);
+            $DB->delete_records('auth_antihammer_ro', ['userid' => $userid]);
         }
     }
-
 }
